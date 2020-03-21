@@ -1,0 +1,8 @@
+#!/bin/bash
+(test $# -lt 1 ) && (echo "too few arguments") && exit 0
+apk=${1:-"-"}
+#did=${2:-"emulator-5554"}
+apk=`readlink -f $apk`
+echo "install $apk..."
+#adb -s $did install ${apk}
+adb install -r ${apk} 
