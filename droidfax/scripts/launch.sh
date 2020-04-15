@@ -22,7 +22,7 @@ phasetwo()
 	# phase 2: profiling (running instrumented apps to collect single- and inter-app traces)
 	echo -e "\n ###############   2.1:  single-app Profiling ############# \n"
 	echo " INPUT "
-	tree $TOOLHOME/cg.instrumented/$inputdir/pairs
+	tree $TOOLHOME/cg.instrumented/$inputdir
 
 	bash runAllApps_monkey.sh $inputdir $tmv
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 source config.sh
 
-(test $# -lt 3) && (echo "too few arguments") && exit 0
+(test $# -lt 2) && (echo "too few arguments") && exit 1
 
 indir=$1
 resdir=$3

@@ -2,7 +2,7 @@
 # set -e
 source config.sh
 
-(test $# -lt 3) && (echo "too few arguments") && exit 0
+(test $# -lt 2) && (echo "too few arguments") && exit 0
 
 indir=$1
 tmv=${3:-"3600"}
@@ -38,7 +38,6 @@ runsingle()
 	tgtp=`$TOOLHOME/apkmng/getpackage.sh $srcdir/$i/$x.apk | awk '{print $2}'`
 	timeout $tmv "adb shell monkey -p $tgtp --ignore-crashes --ignore-timeouts --ignore-security-exceptions --throttle 200 10000000 >$OUTDIR/${i}-$x.monkey"
 	./apkmng/apkuninstall $srcdir/$i/$x.apk
-	killall -9 adb
 	killall -9 adb
 }
 
