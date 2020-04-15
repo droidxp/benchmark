@@ -8,9 +8,5 @@ mkdir -p $outdir
 for file in calleerank callerrank calleerankIns callerrankIns compdist edgefreq gdistcov gdistcovIns 
 do
 	> $outdir/${file}.txt
-	for ct in explicit implicit
-	do
-		cat $outdir/$ct/${file}.txt >> $outdir/${file}.txt
-	done
 done
 exit 0

@@ -14,7 +14,7 @@ jarsigner -verbose \
 		-digestalg SHA1 \
 		-keystore $KEYSTORE \
 		$apkfile \
-        $KEYALIAS
+		$KEYALIAS
 
 echo "verify the signature just added ..."
 jarsigner -verify -verbose -certs $apkfile
