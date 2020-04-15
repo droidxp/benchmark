@@ -1,4 +1,5 @@
 #!/bin/bash
+# set -e
 source config.sh
 
 (test $# -lt 3) && (echo "too few arguments") && exit 0

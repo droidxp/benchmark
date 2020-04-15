@@ -10,7 +10,7 @@ phaseone()
 	echo " INPUT "
 	tree $TOOLHOME/$inputdir
 
-	bash instrAllApps.sh $inputdir
+	bash instrumentAllApps.sh $inputdir
 
 	echo -e "\n Phase 1 finished \n"
 	echo " OUTPUT "

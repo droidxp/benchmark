@@ -1,5 +1,6 @@
 #!/bin/bash
 source config.sh
+
 if [ $# -lt 1 ];then
 	echo "Usage: $0 apk-file"
 	exit 1
