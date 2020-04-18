@@ -7,10 +7,6 @@ outdir=$1
 mkdir -p $outdir
 for file in gicc dataicc extraicc icclink bothdataicc icccov
 do
-	> $outdir/${file}.txt
-	for ct in explicit implicit
-	do
-		cat $outdir/$ct/${file}.txt >> $outdir/${file}.txt
-	done
+	cat ICCReport/${file}.txt > $outdir/ICCReport/${file}.txt
 done
 exit 0

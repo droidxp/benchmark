@@ -12,9 +12,10 @@ echo "sign the apk ..."
 jarsigner -verbose \
 		-sigalg SHA1withRSA \
 		-digestalg SHA1 \
+		-storepass $KEYSTORE_PASSWORD \
 		-keystore $KEYSTORE \
 		$apkfile \
-        $KEYALIAS
+		$KEYALIAS
 
 echo "verify the signature just added ..."
 jarsigner -verify -verbose -certs $apkfile
