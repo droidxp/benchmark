@@ -13,7 +13,7 @@ timeout() {
 
     # start the command in a subshell to avoid problem with pipes
     # (spawn accepts one command)
-    command="/bin/sh -x \"$2\""
+    command="/bin/sh -c \"$2\""
 
     expect -c "set echo \"-noecho\"; set timeout $time; spawn -noecho $command; expect timeout { exit 1 } eof { exit 0 }"    
 
@@ -31,7 +31,7 @@ instr()
 
 		echo "instrumenting $srcdir/${i}/s.apk ......"
 		mkdir -p $destdir/$i
-		$TOOLHOME/instrumentApp.sh "$srcdir/${i}/s.apk" "$destdir/$i"
+		timeout 1200 "$TOOLHOME/instrumentApp.sh $srcdir/${i}/s.apk $destdir/$i"
 		#echo "chapple" | $TOOLHOME/signandalign.sh $destdir/${i}/s.apk
 	done
 }

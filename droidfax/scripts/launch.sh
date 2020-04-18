@@ -41,15 +41,12 @@ phasethree()
 
 	echo -e "\n ###############   3.1:  Computing General Metrics ############# \n"
 	bash allGeneralReport.sh $inputdir results
-	bash combineGeneralReport.sh results
 
 	echo -e "\n ###############   3.2:  Computing Intra-app ICC Metrics ############# \n"
 	bash allICCReport.sh $inputdir results
-	bash combineICCReport.sh results
 
 	echo -e "\n ###############   3.3:  Computing Security Metrics ############# \n"
 	bash allSecurityReport.sh $inputdir results
-	bash combineSecurityReport.sh results
 
 	echo -e "\n Phase 3 finished \n"
 	echo " OUTPUT "

@@ -4,7 +4,7 @@ source config.sh
 (test $# -lt 2) && (echo "too few arguments") && exit 1
 
 indir=$1
-resdir=$3
+resdir=$2
 APKDIR=$TOOLHOME/$indir
 TRACEDIR=$TOOLHOME/singleappTrace
 
