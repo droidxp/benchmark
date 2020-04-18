@@ -7,6 +7,6 @@ outdir=$1
 mkdir -p $outdir
 for file in srcsink src sink callback lifecycleMethod eventHandler 
 do
-	> $outdir/${file}.txt
+	cat securityReport/${file}.txt > $outdir/securityReport/${file}.txt
 done
 exit 0

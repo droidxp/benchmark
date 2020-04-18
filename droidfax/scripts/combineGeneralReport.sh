@@ -7,6 +7,6 @@ outdir=$1
 mkdir -p $outdir
 for file in calleerank callerrank calleerankIns callerrankIns compdist edgefreq gdistcov gdistcovIns 
 do
-	> $outdir/${file}.txt
+	cat generalReport/${file}.txt > $outdir/generalReport/${file}.txt
 done
 exit 0
