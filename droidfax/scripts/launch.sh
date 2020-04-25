@@ -53,11 +53,11 @@ phasethree()
 	tree $TOOLHOME/results
 }
 
-# phaseone
+phaseone
 
-# phasetwo
+phasetwo
 
-# phasethree
+phasethree
 
 echo -e "\n\n FINAL STEP: visualize and tabulate results\n\n"
 bash processResults.sh $inputdir results
