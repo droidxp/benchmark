@@ -18,7 +18,7 @@ do
 	$TOOLHOME/apkmng/getpackage.sh $APKDIR/$file >> $resultlog 2>&1
 	bash $TOOLHOME/securityReport.sh \
 		$APKDIR/$file \
-		$TRACEDIR/$file >> $resultlog 2>&1
+		$TRACEDIR/$file.logcat >> $resultlog 2>&1
 	mv $TOOLHOME/{srcsink.txt,src.txt,sink.txt,callback.txt,lifecycleMethod.txt,eventHandler.txt,securityfeatures.txt} $resultdir
 done
 
