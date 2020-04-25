@@ -25,14 +25,16 @@ timeout() {
 
 instr()
 {
-	for i in $(seq 1 $APPPAIRNUM)
+	for file in `ls $srcdir`
 	do
-		if [ ! -s $srcdir/${i}/s.apk ];then continue; fi
-
-		echo "instrumenting $srcdir/${i}/s.apk ......"
-		mkdir -p $destdir/$i
-		timeout 1200 "$TOOLHOME/instrumentApp.sh $srcdir/${i}/s.apk $destdir/$i"
-		#echo "chapple" | $TOOLHOME/signandalign.sh $destdir/${i}/s.apk
+        if [ -f "$destdir/$file" ]; then
+            echo "Using instrumented $file ......"
+        else
+            echo "Instrumenting $file ......"
+            timeout 1200 "$TOOLHOME/instrumentApp.sh $srcdir/$file $destdir"
+            #echo "chapple" | $TOOLHOME/signandalign.sh $destdir/${i}/s.apk
+        fi
+       
 	done
 }
 

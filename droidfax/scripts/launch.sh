@@ -60,10 +60,7 @@ phasetwo
 phasethree
 
 echo -e "\n\n FINAL STEP: visualize and tabulate results\n\n"
-bash distruteResScripts.sh results
-cd results
-bash produceall.sh
-
+bash processResults.sh $inputdir results
 
 echo -e "\n ============== END OF CHARACTERIZATION ============= "
 echo -e "\n ==============  THANK YOU FOR USING DROIDFAX!  ============= "
