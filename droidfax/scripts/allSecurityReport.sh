@@ -8,21 +8,18 @@ resdir=$2
 APKDIR=$TOOLHOME/$indir
 TRACEDIR=$TOOLHOME/singleappTrace
 
-resultdir=$TOOLHOME/$resdir/securityReport
-mkdir -p $resultdir
-resultlog=$resultdir/log.securityReport.all
-> $resultlog
-for ((i=1;i<=$APPPAIRNUM;i++))
+for file in `ls ${APKDIR}`
 do
-	if [ ! -d $APKDIR/$i ];then continue; fi
-	echo "result for $i/s.apk" >> $resultlog 2>&1
-	$TOOLHOME/apkmng/getpackage.sh $APKDIR/$i/s.apk >> $resultlog 2>&1
+	resultdir=$TOOLHOME/$resdir/$file/securityReport
+	mkdir -p $resultdir
+	resultlog=$resultdir/log.securityReport.all
+	touch $resultlog
+	echo "result for $file" >> $resultlog 2>&1
+	$TOOLHOME/apkmng/getpackage.sh $APKDIR/$file >> $resultlog 2>&1
 	bash $TOOLHOME/securityReport.sh \
-		$APKDIR/$i/s.apk \
-		$TRACEDIR/$i-s.logcat >> $resultlog 2>&1
+		$APKDIR/$file \
+		$TRACEDIR/$file >> $resultlog 2>&1
+	mv $TOOLHOME/{srcsink.txt,src.txt,sink.txt,callback.txt,lifecycleMethod.txt,eventHandler.txt,securityfeatures.txt} $resultdir
 done
-
-mv $TOOLHOME/{srcsink.txt,src.txt,sink.txt,callback.txt,lifecycleMethod.txt,eventHandler.txt,securityfeatures.txt} \
-	$resultdir
 
 exit 0
