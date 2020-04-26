@@ -53,6 +53,8 @@ phasethree()
 	tree $TOOLHOME/results
 }
 
+STARTTIME=$(date +"%s")
+
 phaseone
 
 phasetwo
@@ -63,6 +65,9 @@ echo -e "\n\n FINAL STEP: visualize and tabulate results\n\n"
 bash processResults.sh $inputdir results
 
 echo -e "\n ============== END OF CHARACTERIZATION ============= "
+ENDTIME=$(date +"%s")
+elapsed=$(($ENDTIME-$STARTTIME))
+echo "It took $(($elapsed / 60)) minutes and $(($elapsed % 60)) seconds to complete this benchmark."
 echo -e "\n ==============  THANK YOU FOR USING DROIDFAX!  ============= "
 
 exit 0
