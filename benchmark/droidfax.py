@@ -130,7 +130,7 @@ class DroidFax:
 
                 logging.info('Executing {0}'.format(file))
                 start = time.time()
-                cls._exec_test_generator(os.path.join(INSTRUMENTED_DIR, file), EXECUTION_TIMEOUT)
+                cls._exec_test_generator(file, EXECUTION_TIMEOUT)
                 end = time.time()
                 logging.debug("Execution took {0} seconds".format(int(end-start)))
                 proc.kill()
@@ -262,9 +262,6 @@ class DroidFax:
 
     @classmethod
     def _start_emulator(cls):
-        logging.info('Killing all emulators')
-        cls._kill_emulator()
-        
         logging.info('Starting emulator')
         start = time.time()
         
@@ -296,6 +293,12 @@ class DroidFax:
 
     @staticmethod
     def _install_apk(file):
+
+        root_cmd = Command('adb', [
+            'root',
+        ])
+        result = root_cmd.invoke()
+
         readlink_cmd = Command('readlink', ['-f', file])
         readlink_result = readlink_cmd.invoke()
         install_cmd = Command('adb', [
@@ -305,7 +308,7 @@ class DroidFax:
             '-r',
             readlink_result.stdout.strip().decode('ascii')
         ])
-        result = install_cmd.invoke()
+        install_cmd.invoke()
 
     @classmethod
     def _uninstall_apk(cls, file):
@@ -315,18 +318,20 @@ class DroidFax:
 
     @classmethod
     def _exec_test_generator(cls, file, timeout):
-        package_name = cls._get_package_name(file)
-        exec_cmd = Command('adb', [
-            'shell',
-            'monkey',
-            '-p',
-            package_name,
-            # '--ignore-crashes',
-            # '--ignore-timeouts',
-            '--ignore-security-exceptions',
-            '100000'
-        ], timeout)
-        exec_cmd.invoke()
+        package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
+        monkey_trace_file = os.path.join(TRACE_DIR, "{0}.monkey".format(file))
+        with open(monkey_trace_file, 'wb') as monkey_trace:
+            exec_cmd = Command('adb', [
+                'shell',
+                'monkey',
+                '-p',
+                package_name,
+                # '--ignore-crashes',
+                # '--ignore-timeouts',
+                '--ignore-security-exceptions',
+                '100000'
+            ], timeout)
+            exec_cmd.invoke(stdout=monkey_trace)
     
     @staticmethod
     def _get_package_name(file):

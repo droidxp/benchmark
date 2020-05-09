@@ -81,6 +81,8 @@ class Command:
             except OSError:
                 raise CommandNotFoundError("The command % was not found" % (self.__command))
 
+        logging.debug('Command (stdout): {0}'.format(stdout))
+        logging.debug('Command (stderr): {0}'.format(stderr))
         return CommandResult(code, stdout, stderr)
 
     def invoke_as_deamon(self, stdout=PIPE, stderr=PIPE):
