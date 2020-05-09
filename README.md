@@ -1,6 +1,16 @@
 # Benchmark
 
-# Dependencies
+## Summary
+
+- [Description](#description)
+- [Dependencies](#dependencies)
+- [How to run](#how-to-run)
+
+## Description
+
+TODO: Description of the project: Purpose, Architecture...
+
+## Dependencies
 
 This project depends on:
 - Java 7
@@ -10,13 +20,8 @@ This project depends on:
 It's assumed that some commands are in your PATH environment variable: `adb`, `java`, `jarsigner`, `emulator` and `aapt`.
 
 
-# Execution
+## How to run
 
 To run the benchmark, execute the following command:
 
     python main.py
-
-
-# Project Architecture
-
-...
