@@ -123,7 +123,7 @@ class DroidFax:
             logging.info('Installing {0}'.format(file))
             cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
 
-            logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-ch-monitor'])
+            logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
             logcat_file = os.path.join(TRACE_DIR, "{0}.logcat".format(file))
             with open(logcat_file, 'wb') as log_cat:
                 proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
