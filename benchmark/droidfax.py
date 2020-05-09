@@ -293,12 +293,10 @@ class DroidFax:
 
     @staticmethod
     def _install_apk(file):
-
         root_cmd = Command('adb', [
             'root',
         ])
         result = root_cmd.invoke()
-
         readlink_cmd = Command('readlink', ['-f', file])
         readlink_result = readlink_cmd.invoke()
         install_cmd = Command('adb', [
