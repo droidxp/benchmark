@@ -318,6 +318,8 @@ class DroidFax:
     def _exec_test_generator(cls, file, timeout):
         package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
         monkey_trace_file = os.path.join(TRACE_DIR, "{0}.monkey".format(file))
+
+        # Run monkey with timeout
         with open(monkey_trace_file, 'wb') as monkey_trace:
             exec_cmd = Command('adb', [
                 'shell',
@@ -330,7 +332,26 @@ class DroidFax:
                 '100000'
             ], timeout)
             exec_cmd.invoke(stdout=monkey_trace)
-    
+        
+        # Kill all monkey process
+        get_monkey_processes_cmd = Command('adb', [
+            'shell',
+            'ps',
+            '|',
+            'grep',
+            'com.android.commands.monkey'
+        ])
+        get_monkey_processes_result = get_monkey_processes_cmd.invoke()
+        for line in get_monkey_processes_result.stdout.decode('ascii').split(os.linesep):
+            if line.strip():
+                tokens = line.split()
+                kill_process_cmd = Command('adb', [
+                    'shell',
+                    'kill',
+                    tokens[1],
+                ])
+                kill_process_cmd.invoke()
+
     @staticmethod
     def _get_package_name(file):
         readlink_cmd = Command('readlink', ['-f', file])
