@@ -164,7 +164,7 @@ class DroidFax:
             logging.error(error_msg)
             raise Exception(error_msg)
 
-        for file in os.listdir(INSTRUMENTED_DIR):
+        for file in os.listdir(INPUT_DIR):
 
             # Create file results folder.
             try:
@@ -184,7 +184,7 @@ class DroidFax:
 
             with open(os.path.join(RESULTS_DIR, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                 general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                general_report_log.write(cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file)).encode('ascii'))
+                general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
 
                 general_report_cmd = Command('java', [
                     '-Xmx4g',
@@ -202,13 +202,13 @@ class DroidFax:
                     'cg.spark',
                     'verbose:false,on-fly-cg:true,rta:false',
                     '-d',
-                    os.path.join(RESULTS_DIR, file, 'general_report'),
+                    os.path.join(TRACE_DIR, "{0}.logcat".format(file)),
                     '-process-dir',
-                    os.path.join(INSTRUMENTED_DIR, file),
+                    os.path.join(INPUT_DIR, file),
                     '-trace',
                     os.path.join(TRACE_DIR, "{0}.logcat".format(file))
                 ])
-                general_report_cmd.invoke(stdout=general_report_log)
+                general_report_cmd.invoke(stdout=general_report_log, stderr=general_report_log)
 
             for result_file in ['calleerank.txt', 'callerrank.txt', 'calleerankIns.txt', 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt', 'gdistcovIns.txt', 'gfeatures.txt']:
                 if os.path.exists(os.path.join(WORKING_DIR, result_file)):
@@ -224,10 +224,10 @@ class DroidFax:
 
             with open(os.path.join(RESULTS_DIR, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                 security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                security_report_log.write(cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file)).encode('ascii'))
+                security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
 
                 security_report_cmd = Command('java', [
-                    '-Xmx4g',
+                    '-Xmx5g',
                     '-ea',
                     '-cp',
                     main_cp,
@@ -242,7 +242,7 @@ class DroidFax:
                     'cg.spark',
                     'verbose:false,on-fly-cg:true,rta:false',
                     '-d',
-                    os.path.join(RESULTS_DIR, file, 'security_report'),
+                    os.path.join(TRACE_DIR, "{0}.logcat".format(file)),
                     '-catsrc',
                     os.path.join(WORKING_DIR, 'data', 'catsources.txt.final'),
                     '-catsink',
@@ -250,11 +250,11 @@ class DroidFax:
                     '-catcallback',
                     os.path.join(WORKING_DIR, 'data', 'catCallbacks.txt'),
                     '-process-dir',
-                    os.path.join(INSTRUMENTED_DIR, file),
+                    os.path.join(INPUT_DIR, file),
                     '-trace',
                     os.path.join(TRACE_DIR, "{0}.logcat".format(file))
                 ])
-                security_report_cmd.invoke(stdout=security_report_log)
+                security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
 
             for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
                 if os.path.exists(os.path.join(WORKING_DIR, result_file)):
