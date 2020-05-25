@@ -64,7 +64,7 @@ class Command:
                 proc.kill()
                 (stdout, stderr) = proc.communicate(stdin)
             except OSError:
-                raise CommandNotFoundError("The command % was not found" % (self.__command))
+                raise CommandNotFoundError("The command {0} was not found".format(self._command))
             code = proc.returncode
         else:
             try:
@@ -79,7 +79,7 @@ class Command:
                 if self._timeout is not None:
                     timer.cancel()
             except OSError:
-                raise CommandNotFoundError("The command % was not found" % (self.__command))
+                raise CommandNotFoundError("The command {0} was not found".format(self._command))
 
         logging.debug('Command (stdout): {0}'.format(stdout))
         logging.debug('Command (stderr): {0}'.format(stderr))
@@ -98,5 +98,5 @@ class Command:
         try:
             proc = Popen(cmd_args, stderr=PIPE, stdout=stdout)
         except OSError:
-            raise CommandNotFoundError("The command % was not found" % (self.__command))
+            raise CommandNotFoundError("The command {0} was not found".format(self._command))
         return proc
