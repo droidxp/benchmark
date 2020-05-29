@@ -130,7 +130,7 @@ class DroidFax:
 
                 logging.info('Executing {0}'.format(file))
                 start = time.time()
-                cls._exec_test_generator(file, EXECUTION_TIMEOUT)
+                cls._exec_test_generator_droidbot(file, EXECUTION_TIMEOUT)
                 end = time.time()
                 logging.debug("Execution took {0} seconds".format(int(end-start)))
                 proc.kill()
@@ -297,7 +297,7 @@ class DroidFax:
             'root',
         ])
         result = root_cmd.invoke()
-        readlink_cmd = Command('readlink', ['-f', file])
+        readlink_cmd = Command('greadlink', ['-f', file])
         readlink_result = readlink_cmd.invoke()
         install_cmd = Command('adb', [
             '-s',
@@ -313,6 +313,46 @@ class DroidFax:
         package_name = cls._get_package_name(file)
         uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
         uninstall_cmd.invoke()
+
+    # Start Droidbot:
+    # droidbot -a <path_to_apk> -o output_dir
+    @classmethod
+    def _exec_test_generator_droidbot(cls, file, timeout):
+        package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
+        droidbot_trace_file = os.path.join(TRACE_DIR, "{0}.droidbot".format(file))
+        logging.info('Droidbot trace file', droidbot_trace_file)
+
+        with open(monkey_trace_file, 'wb') as monkey_trace:
+            exec_cmd = Command('droidbot', [
+                '-d',
+                'emulator-5554',
+                '-a',
+                package_name,
+                # '--ignore-crashes',
+                # '--ignore-timeouts',
+                '-o',
+                'output_dir'
+            ], timeout)
+            exec_cmd.invoke(stdout=droidbot_trace)
+
+        # Kill all monkey process
+        get_droidbot_processes_cmd = Command('adb', [
+            'shell',
+            'ps',
+            '|',
+            'grep',
+            'com.android.commands.droidbot'
+        ])
+        get_droidbot_processes_result = get_droidbot_processes_cmd.invoke()
+        for line in get_droidbot_processes_result.stdout.decode('ascii').split(os.linesep):
+            if line.strip():
+                tokens = line.split()
+                kill_process_cmd = Command('adb', [
+                    'shell',
+                    'kill',
+                    tokens[1],
+                ])
+                kill_process_cmd.invoke()
 
     @classmethod
     def _exec_test_generator(cls, file, timeout):
@@ -354,7 +394,7 @@ class DroidFax:
 
     @staticmethod
     def _get_package_name(file):
-        readlink_cmd = Command('readlink', ['-f', file])
+        readlink_cmd = Command('greadlink', ['-f', file])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')
         
