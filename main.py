@@ -13,7 +13,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')
 
     # Recebe lista de ferramentas de testes
-    parser.add_argument('--tools', nargs='+', help='Seleciona as ferramentas de testes')
+    parser.add_argument('-tools', nargs='+', help='Seleciona as ferramentas de testes', default='monkey')
 
     # Recebe timeout limite para rodar os testes
     parser.add_argument('-t', default=60, help='(-t -tempo) Adicione o tempo limite de timeout', type=int)
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # Quantidade de repeticoes para rodar os testes
     parser.add_argument('-r', default=1, help='(-r, -repeticoes) Quantidade de repeticoes para rodar os testes', type=int)
 
-    parser.add_argument('-path', default='', help='(path) Caminho da pasta contedo os apks de teste')
+    parser.add_argument('-path', default='/data/input', help='(path) Caminho da pasta contedo os apks de teste')
 
     args = parser.parse_args()
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
 
-    DroidFax.run()
+    DroidFax.run(args)
 
     end = time.time()
     elapsed = end - start

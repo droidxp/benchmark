@@ -11,13 +11,20 @@ import shutil
 class DroidFax:
 
     @classmethod
-    def run(cls):
-        cls.phase_one_instrumentation()
-        cls.phase_two_execution()
-        cls.phase_three_results()
+    def run(cls, *args):
+        # Arg parse
+        path = WORKING_DIR+args[0].path
+        repetitions = args[0].r
+        timeout = args[0].t
+        tools = args[0].tools
+        # End Arg parse
+
+        cls.phase_one_instrumentation(path)
+        cls.phase_two_execution(timeout, tools)
+        # cls.phase_three_results()
 
     @staticmethod
-    def phase_one_instrumentation():
+    def phase_one_instrumentation(input_path):
         logging.info('Droidfax\'s Phase 1: Instrumentation')
         
         # Create a folder to store intrumented apps if it doesn't exist.
@@ -37,7 +44,7 @@ class DroidFax:
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
-        for file in os.listdir(INPUT_DIR):
+        for file in os.listdir(input_path):
 
             # Verify if apk is already instrumented.
             if os.path.exists(os.path.join(INSTRUMENTED_DIR, file)):
@@ -67,7 +74,7 @@ class DroidFax:
                 os.path.join(INSTRUMENTED_DIR),
                 '-instr3rdparty',
                 '-process-dir',
-                os.path.join(INPUT_DIR, file)
+                os.path.join(input_path, file)
             ], 1200)
             instrument_result = instrument_cmd.invoke()
 
@@ -101,17 +108,26 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls):
+    def phase_two_execution(cls, timeout, tools):
         logging.info('Droidfax\'s Phase 2: Execution')
-        
+
+        # Verification of the timeout time ratio according to the number of apks in the input folder
+        apks_qnt = len(os.listdir(INSTRUMENTED_DIR))
+        tools_qnt = len(tools)
+        timeout_by_apk = (timeout/apks_qnt)/tools_qnt
+
         # Create a folder to store execution trace
         try:
             if not os.path.exists(TRACE_DIR):
                 os.mkdir(TRACE_DIR)
+                os.mkdir(os.path.join(TRACE_DIR, "droidbot"))
+                os.mkdir(os.path.join(TRACE_DIR, "monkey"))
             else:
                 # Delete previous traces
-                for file in os.listdir(TRACE_DIR):
-                    os.remove(os.path.join(TRACE_DIR, file))
+                for file in os.listdir(os.path.join(TRACE_DIR, "droidbot")):
+                    os.remove(os.path.join(TRACE_DIR, "droidbot", file))
+                for file in os.listdir(os.path.join(TRACE_DIR, "monkey")):
+                    os.remove(os.path.join(TRACE_DIR, "monkey", file))
         except OSError:
             error_msg = 'Error while creating folder {0}'.format(TRACE_DIR)
             logging.error(error_msg)
@@ -123,17 +139,42 @@ class DroidFax:
             logging.info('Installing {0}'.format(file))
             cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
 
-            logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-            logcat_file = os.path.join(TRACE_DIR, "{0}.logcat".format(file))
-            with open(logcat_file, 'wb') as log_cat:
-                proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
+            if ("monkey" in tools):
+                logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
+                logcat_file = os.path.join(TRACE_DIR, "monkey", "{0}.logcat".format(file))
 
-                logging.info('Executing {0}'.format(file))
-                start = time.time()
-                cls._exec_test_generator_droidbot(file, EXECUTION_TIMEOUT)
-                end = time.time()
-                logging.debug("Execution took {0} seconds".format(int(end-start)))
-                proc.kill()
+                with open(logcat_file, 'wb') as log_cat:
+                    proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
+
+                    logging.info('Executing {0}'.format(file))
+                    start = time.time()
+
+                    logging.info("Testing with monkey {0} seconds".format(int(timeout_by_apk)))
+                    cls._exec_test_generator(file, timeout_by_apk)
+                    
+                    end = time.time()
+                    logging.debug("Execution took {0} seconds".format(int(end-start)))
+                    proc.kill()
+
+                # logging.info('Uninstalling {0}'.format(file))
+                # cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+
+            if ("droidbot" in tools):
+                logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
+                logcat_file = os.path.join(TRACE_DIR, "droidbot", "{0}.logcat".format(file))
+
+                with open(logcat_file, 'wb') as log_cat:
+                    proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
+
+                    logging.info('Executing {0}'.format(file))
+                    start = time.time()
+                    
+                    logging.info("Testing with droidbot {0} seconds".format(int(timeout_by_apk)))
+                    cls._exec_test_generator_droidbot(file, timeout_by_apk)
+
+                    end = time.time()
+                    logging.debug("Execution took {0} seconds".format(int(end-start)))
+                    proc.kill()
 
             logging.info('Uninstalling {0}'.format(file))
             cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
@@ -318,24 +359,23 @@ class DroidFax:
     # droidbot -a <path_to_apk> -o output_dir
     @classmethod
     def _exec_test_generator_droidbot(cls, file, timeout):
-        package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
-        droidbot_trace_file = os.path.join(TRACE_DIR, "{0}.droidbot".format(file))
-        logging.info('Droidbot trace file', droidbot_trace_file)
+        # package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
+        package_name = os.path.join('data', 'instrumented', file)
+        droidbot_trace_file = os.path.join(TRACE_DIR, "droidbot", "{0}.droidbot".format(file))
+        # logging.info(package_name)
 
-        with open(monkey_trace_file, 'wb') as monkey_trace:
+        with open(droidbot_trace_file, 'wb') as droidbot_trace:
             exec_cmd = Command('droidbot', [
                 '-d',
                 'emulator-5554',
                 '-a',
                 package_name,
-                # '--ignore-crashes',
-                # '--ignore-timeouts',
-                '-o',
-                'output_dir'
+                '-timeout',
+                str(timeout)
             ], timeout)
             exec_cmd.invoke(stdout=droidbot_trace)
 
-        # Kill all monkey process
+        # Kill all droidbot process
         get_droidbot_processes_cmd = Command('adb', [
             'shell',
             'ps',
@@ -357,7 +397,7 @@ class DroidFax:
     @classmethod
     def _exec_test_generator(cls, file, timeout):
         package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
-        monkey_trace_file = os.path.join(TRACE_DIR, "{0}.monkey".format(file))
+        monkey_trace_file = os.path.join(TRACE_DIR, "monkey", "{0}.monkey".format(file))
 
         # Run monkey with timeout
         with open(monkey_trace_file, 'wb') as monkey_trace:
