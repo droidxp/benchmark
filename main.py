@@ -13,15 +13,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')
 
     # Recebe lista de ferramentas de testes
-    parser.add_argument('-tools', nargs='+', help='Seleciona as ferramentas de testes', default='monkey')
+    parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default='monkey')
 
     # Recebe timeout limite para rodar os testes
-    parser.add_argument('-t', default=60, help='(-t -tempo) Adicione o tempo limite de timeout', type=int)
+    parser.add_argument('-t', default=60, help='(-t -time) Threshold of the execution time in the experiment', type=int)
 
     # Quantidade de repeticoes para rodar os testes
-    parser.add_argument('-r', default=1, help='(-r, -repeticoes) Quantidade de repeticoes para rodar os testes', type=int)
+    parser.add_argument('-r', default=1, help='(-r, -repetitions) Number of repetitions used in the experiment', type=int)
 
-    parser.add_argument('-path', default='/data/input', help='(path) Caminho da pasta contedo os apks de teste')
+    parser.add_argument('-path', default='/data/input', help='(path) PATH for the target APKs in the experiment')
 
     args = parser.parse_args()
 
