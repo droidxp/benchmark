@@ -3,15 +3,43 @@ import logging
 import time
 import sys
 import argparse
+import pathlib
+import importlib
 
 from benchmark.droidfax import DroidFax
 
+def qualifiedName(p):
+    return p.replace(".py", "").replace("./", "").replace("/", ".")
 
+
+tools = {}
+
+def loadTools():
+    '''Load all available tools. 
+      
+     A tool must be defined in a subdirectory within 
+     the tools folder, in a python module named tool.py. 
+     This module must also declare a class named ToolSpec, 
+     which shoud inherit from AbstractToo. 
+    '''
+    for subdir, dirs, files in os.walk('.' + os.sep + 'tools'):
+        for filename in files:
+            if filename == 'tool.py':
+                tool_module = importlib.import_module(qualifiedName(subdir + os.sep + filename))
+                tool_class = getattr(tool_module, 'ToolSpec')
+                tool_instance = tool_class()
+                tools[tool_instance.name] = tool_instance
+                        
 if __name__ == '__main__':
+
+    loadTools()
     
     # Start catching arguments
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')
 
+    # list available tools 
+    parser.add_argument("--list_tools", help="list available tools", action="store_true")
+    
     # Recebe lista de ferramentas de testes
     parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default='monkey')
 
@@ -27,11 +55,20 @@ if __name__ == '__main__':
 
     # End catching arguments
 
+    if args.list_tools:
+        print("=========================")
+        print("Listing available tools:")
+        print("=========================\n")
+
+        for key in tools:
+            print(" [{0}] {1} \n".format(key, tools[key].description))
+        sys.exit("")
+        
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
 
-    DroidFax.run(args)
+    DroidFax.run(tools, args)
 
     end = time.time()
     elapsed = end - start
