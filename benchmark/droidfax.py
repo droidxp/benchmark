@@ -108,7 +108,7 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls, timeout, tools):
+    def phase_two_execution(cls, timeout, toolSet, tools):
         logging.info('Droidfax\'s Phase 2: Execution')
 
         # Verification of the timeout time ratio according to the number of apks in the input folder
@@ -335,3 +335,20 @@ class DroidFax:
         package_name = cls._get_package_name(file)
         uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
         uninstall_cmd.invoke()
+
+    @classmethod
+    def _get_package_name(cls, fileName):
+        readlink_cmd = Command('greadlink', ['-f', fileName])
+        readlink_result = readlink_cmd.invoke()
+        readlink_result_str = readlink_result.stdout.strip().decode('ascii')
+        
+        get_package_list_cmd = Command('aapt', ['list', '-a', fileName])
+        get_package_list_result = get_package_list_cmd.invoke()
+        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
+
+        match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
+        if match is None:
+            match = re.search(r'package=(.*)', get_package_list_result_str, re.MULTILINE)
+            if match is None:
+                return None
+        return match.group(1)

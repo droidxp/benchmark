@@ -1,4 +1,8 @@
+import os
+
 from abc import ABCMeta, abstractmethod
+
+from benchmark.commands.command import Command
 
 class AbstractTool(object):
     '''
@@ -34,8 +38,8 @@ class AbstractTool(object):
            timeout(int): execution timeout
            trace_dir(str): the trace directory
         '''
-        execute_tool_specific_code(self, fileName, timeout)
-        kill_related_processes(self, self.process_pattern)
+        self.__execute_tool_specific_logic(fileName, timeout)
+        self.kill_related_processes(self.process_pattern)
 
     def kill_related_processes(self, process_pattern):
         '''Kills all related processes'''
