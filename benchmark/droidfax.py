@@ -11,7 +11,7 @@ import shutil
 class DroidFax:
 
     @classmethod
-    def run(cls, *args):
+    def run(cls, toolSet, *args):
         # Arg parse
         path = WORKING_DIR+args[0].path
         repetitions = args[0].r
@@ -20,7 +20,7 @@ class DroidFax:
         # End Arg parse
 
         cls.phase_one_instrumentation(path)
-        cls.phase_two_execution(timeout, tools)
+        cls.phase_two_execution(timeout, toolSet, tools)
         # cls.phase_three_results()
 
     @staticmethod
@@ -108,7 +108,7 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls, timeout, tools):
+    def phase_two_execution(cls, timeout, toolSet, tools):
         logging.info('Droidfax\'s Phase 2: Execution')
 
         # Verification of the timeout time ratio according to the number of apks in the input folder
@@ -120,14 +120,13 @@ class DroidFax:
         try:
             if not os.path.exists(TRACE_DIR):
                 os.mkdir(TRACE_DIR)
-                os.mkdir(os.path.join(TRACE_DIR, "droidbot"))
-                os.mkdir(os.path.join(TRACE_DIR, "monkey"))
+                for tool in tools:
+                    os.mkdir(os.path.join(TRACE_DIR, tool))
             else:
-                # Delete previous traces
-                for file in os.listdir(os.path.join(TRACE_DIR, "droidbot")):
-                    os.remove(os.path.join(TRACE_DIR, "droidbot", file))
-                for file in os.listdir(os.path.join(TRACE_DIR, "monkey")):
-                    os.remove(os.path.join(TRACE_DIR, "monkey", file))
+                for tool in tools:
+                    for file in os.listdir(os.path.join(TRACE_DIR, tool)):
+                        os.remove(os.path.join(TRACE_DIR, tool, file))
+
         except OSError:
             error_msg = 'Error while creating folder {0}'.format(TRACE_DIR)
             logging.error(error_msg)
@@ -139,9 +138,9 @@ class DroidFax:
             logging.info('Installing {0}'.format(file))
             cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
 
-            if ("monkey" in tools):
+            for tool in tools:
                 logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-                logcat_file = os.path.join(TRACE_DIR, "monkey", "{0}.logcat".format(file))
+                logcat_file = os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
 
                 with open(logcat_file, 'wb') as log_cat:
                     proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
@@ -149,29 +148,9 @@ class DroidFax:
                     logging.info('Executing {0}'.format(file))
                     start = time.time()
 
-                    logging.info("Testing with monkey {0} seconds".format(int(timeout_by_apk)))
-                    cls._exec_test_generator(file, timeout_by_apk)
+                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout_by_apk)))
+                    toolSet[tool].execute(file, timeout_by_apk)
                     
-                    end = time.time()
-                    logging.debug("Execution took {0} seconds".format(int(end-start)))
-                    proc.kill()
-
-                # logging.info('Uninstalling {0}'.format(file))
-                # cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
-
-            if ("droidbot" in tools):
-                logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-                logcat_file = os.path.join(TRACE_DIR, "droidbot", "{0}.logcat".format(file))
-
-                with open(logcat_file, 'wb') as log_cat:
-                    proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
-
-                    logging.info('Executing {0}'.format(file))
-                    start = time.time()
-                    
-                    logging.info("Testing with droidbot {0} seconds".format(int(timeout_by_apk)))
-                    cls._exec_test_generator_droidbot(file, timeout_by_apk)
-
                     end = time.time()
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
@@ -251,7 +230,9 @@ class DroidFax:
                 ])
                 general_report_cmd.invoke(stdout=general_report_log, stderr=general_report_log)
 
-            for result_file in ['calleerank.txt', 'callerrank.txt', 'calleerankIns.txt', 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt', 'gdistcovIns.txt', 'gfeatures.txt']:
+            for result_file in ['calleerank.txt', 'callerrank.txt', 'calleerankIns.txt'
+                               , 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt'
+                               , 'gdistcovIns.txt', 'gfeatures.txt']:
                 if os.path.exists(os.path.join(WORKING_DIR, result_file)):
                     os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, file, 'general_report', result_file))
 
@@ -355,90 +336,13 @@ class DroidFax:
         uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
         uninstall_cmd.invoke()
 
-    # Start Droidbot:
-    # droidbot -a <path_to_apk> -o output_dir
     @classmethod
-    def _exec_test_generator_droidbot(cls, file, timeout):
-        # package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
-        package_name = os.path.join('data', 'instrumented', file)
-        droidbot_trace_file = os.path.join(TRACE_DIR, "droidbot", "{0}.droidbot".format(file))
-        # logging.info(package_name)
-
-        with open(droidbot_trace_file, 'wb') as droidbot_trace:
-            exec_cmd = Command('droidbot', [
-                '-d',
-                'emulator-5554',
-                '-a',
-                package_name,
-                '-timeout',
-                str(timeout)
-            ], timeout)
-            exec_cmd.invoke(stdout=droidbot_trace)
-
-        # Kill all droidbot process
-        get_droidbot_processes_cmd = Command('adb', [
-            'shell',
-            'ps',
-            '|',
-            'grep',
-            'com.android.commands.droidbot'
-        ])
-        get_droidbot_processes_result = get_droidbot_processes_cmd.invoke()
-        for line in get_droidbot_processes_result.stdout.decode('ascii').split(os.linesep):
-            if line.strip():
-                tokens = line.split()
-                kill_process_cmd = Command('adb', [
-                    'shell',
-                    'kill',
-                    tokens[1],
-                ])
-                kill_process_cmd.invoke()
-
-    @classmethod
-    def _exec_test_generator(cls, file, timeout):
-        package_name = cls._get_package_name(os.path.join(INSTRUMENTED_DIR, file))
-        monkey_trace_file = os.path.join(TRACE_DIR, "monkey", "{0}.monkey".format(file))
-
-        # Run monkey with timeout
-        with open(monkey_trace_file, 'wb') as monkey_trace:
-            exec_cmd = Command('adb', [
-                'shell',
-                'monkey',
-                '-p',
-                package_name,
-                # '--ignore-crashes',
-                # '--ignore-timeouts',
-                '--ignore-security-exceptions',
-                '100000'
-            ], timeout)
-            exec_cmd.invoke(stdout=monkey_trace)
-        
-        # Kill all monkey process
-        get_monkey_processes_cmd = Command('adb', [
-            'shell',
-            'ps',
-            '|',
-            'grep',
-            'com.android.commands.monkey'
-        ])
-        get_monkey_processes_result = get_monkey_processes_cmd.invoke()
-        for line in get_monkey_processes_result.stdout.decode('ascii').split(os.linesep):
-            if line.strip():
-                tokens = line.split()
-                kill_process_cmd = Command('adb', [
-                    'shell',
-                    'kill',
-                    tokens[1],
-                ])
-                kill_process_cmd.invoke()
-
-    @staticmethod
-    def _get_package_name(file):
-        readlink_cmd = Command('greadlink', ['-f', file])
+    def _get_package_name(cls, fileName):
+        readlink_cmd = Command('greadlink', ['-f', fileName])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')
         
-        get_package_list_cmd = Command('aapt', ['list', '-a', file])
+        get_package_list_cmd = Command('aapt', ['list', '-a', fileName])
         get_package_list_result = get_package_list_cmd.invoke()
         get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
 
