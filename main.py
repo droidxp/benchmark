@@ -39,7 +39,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')
 
     # list available tools 
-    parser.add_argument("--list_tools", help="list available tools", action="store_true")
+    parser.add_argument("--list-tools", help="list available tools", action="store_true")
     
     # Recebe lista de ferramentas de testes
     parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default='monkey')
