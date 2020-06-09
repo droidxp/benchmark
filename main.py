@@ -42,7 +42,7 @@ if __name__ == '__main__':
     parser.add_argument("--list-tools", help="list available tools", action="store_true")
     
     # Recebe lista de ferramentas de testes
-    parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default='monkey')
+    parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default=['monkey'])
 
     # Recebe timeout limite para rodar os testes
     parser.add_argument('-t', default=60, help='(-t -time) Threshold of the execution time in the experiment', type=int)
