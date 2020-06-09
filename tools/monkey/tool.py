@@ -33,7 +33,7 @@ class ToolSpec(AbstractTool):
 
 
     def _get_package_name(self, fileName):
-        readlink_cmd = Command('greadlink', ['-f', fileName])
+        readlink_cmd = Command('readlink', ['-f', fileName])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')
         
