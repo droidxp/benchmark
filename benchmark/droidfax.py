@@ -114,7 +114,7 @@ class DroidFax:
         # Verification of the timeout time ratio according to the number of apks in the input folder
         apks_qnt = len(os.listdir(INSTRUMENTED_DIR))
         tools_qnt = len(tools)
-        timeout_by_apk = (timeout/apks_qnt)
+        timeout_by_apk = (timeout/apks_qnt) / tools_qnt
 
         logging.info("TIMEOUT {0}".format(int(tools_qnt)))
 
@@ -187,13 +187,14 @@ class DroidFax:
     def phase_three_results(cls):
         logging.info('Droidfax\'s Phase 3: Results')
 
-        # Collect instrumentation dependencies
-        libs = list(map(lambda dep: os.path.join(LIBS_DIR, dep), os.listdir(LIBS_DIR)))
-        main_cp = ':'.join(libs)
+        # Defining specific dir for each tool (monkey, droidbot, droidmate...)
+        RESULTS_DROIDBOT_DIR = os.path.join(RESULTS_DIR,  'droidbot')
+        RESULTS_MONKEY_DIR = os.path.join(RESULTS_DIR,  'monkey')
 
-        # Collect soot dependencies
-        droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
-        soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
+        # Defining specific dir for each tool (monkey, droidbot, droidmate...)
+        TRACE_DROIDBOT_DIR = os.path.join(TRACE_DIR,  'droidbot')
+        TRACE_MONKEY_DIR = os.path.join(TRACE_DIR,  'monkey')
+
 
         # Create a folder to store droid results
         if os.path.exists(RESULTS_DIR):
@@ -202,106 +203,125 @@ class DroidFax:
             shutil.rmtree(RESULTS_DIR)
         try:
             os.mkdir(RESULTS_DIR)
+            os.mkdir(RESULTS_DROIDBOT_DIR)
+            os.mkdir(RESULTS_MONKEY_DIR)
         except OSError:
             error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
             logging.error(error_msg)
             raise Exception(error_msg)
 
         for file in os.listdir(INPUT_DIR):
+            cls._make_results_folders(file, RESULTS_DROIDBOT_DIR, TRACE_DROIDBOT_DIR)
 
-            # Create file results folder.
-            try:
-                os.mkdir(os.path.join(RESULTS_DIR, file))
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, file))
-                logging.error(error_msg)
-                raise Exception(error_msg)
+        for file in os.listdir(INPUT_DIR):
+            cls._make_results_folders(file, RESULTS_MONKEY_DIR, TRACE_MONKEY_DIR)
 
-            # General Results
-            try:
-                os.mkdir(os.path.join(RESULTS_DIR, file, 'general_report'))
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, file, 'general_report'))
-                logging.error(error_msg)
-                raise Exception(error_msg)
 
-            with open(os.path.join(RESULTS_DIR, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
-                general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+        
+    # Create file results folder.
+    @classmethod
+    def _make_results_folders(cls, file, _RESULTS_DIR, _TRACE_DIR):
 
-                general_report_cmd = Command('java', [
-                    '-Xmx4g',
-                    '-ea',
-                    '-cp',
-                    main_cp,
-                    'reporters.generalReport',
-                    '-w',
-                    '-cp',
-                    soot_cp,
-                    '-p',
-                    'cg',
-                    'verbose:false,implicit-entry:true',
-                    '-p',
-                    'cg.spark',
-                    'verbose:false,on-fly-cg:true,rta:false',
-                    '-d',
-                    os.path.join(TRACE_DIR, "{0}.logcat".format(file)),
-                    '-process-dir',
-                    os.path.join(INPUT_DIR, file),
-                    '-trace',
-                    os.path.join(TRACE_DIR, "{0}.logcat".format(file))
-                ])
-                general_report_cmd.invoke(stdout=general_report_log, stderr=general_report_log)
+        # Collect instrumentation dependencies
+        libs = list(map(lambda dep: os.path.join(LIBS_DIR, dep), os.listdir(LIBS_DIR)))
+        main_cp = ':'.join(libs)
 
-            for result_file in ['calleerank.txt', 'callerrank.txt', 'calleerankIns.txt', 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt', 'gdistcovIns.txt', 'gfeatures.txt']:
-                if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                    os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, file, 'general_report', result_file))
+        # Collect soot dependencies
+        droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
+        soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
-            # Security Results
-            try:
-                os.mkdir(os.path.join(RESULTS_DIR, file, 'security_report'))
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, file, 'security_report'))
-                logging.error(error_msg)
-                raise Exception(error_msg)
+        try:
+            os.mkdir(os.path.join(_RESULTS_DIR, file))
+        except OSError:
+            error_msg = 'Error while creating folder {0}'.format(os.path.join(_RESULTS_DIR, file))
+            logging.error(error_msg)
+            raise Exception(error_msg)
 
-            with open(os.path.join(RESULTS_DIR, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
-                security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+        # General Results
+        try:
+            os.mkdir(os.path.join(_RESULTS_DIR, file, 'general_report'))
+        except OSError:
+            error_msg = 'Error while creating folder {0}'.format(os.path.join(_RESULTS_DIR, file, 'general_report'))
+            logging.error(error_msg)
+            raise Exception(error_msg)
 
-                security_report_cmd = Command('java', [
-                    '-Xmx5g',
-                    '-ea',
-                    '-cp',
-                    main_cp,
-                    'reporters.rankReport',
-                    '-w',
-                    '-cp',
-                    soot_cp,
-                    '-p',
-                    'cg',
-                    'verbose:false,implicit-entry:true',
-                    '-p',
-                    'cg.spark',
-                    'verbose:false,on-fly-cg:true,rta:false',
-                    '-d',
-                    os.path.join(TRACE_DIR, "{0}.logcat".format(file)),
-                    '-catsrc',
-                    os.path.join(WORKING_DIR, 'data', 'catsources.txt.final'),
-                    '-catsink',
-                    os.path.join(WORKING_DIR, 'data', 'catsinks.txt.final'),
-                    '-catcallback',
-                    os.path.join(WORKING_DIR, 'data', 'catCallbacks.txt'),
-                    '-process-dir',
-                    os.path.join(INPUT_DIR, file),
-                    '-trace',
-                    os.path.join(TRACE_DIR, "{0}.logcat".format(file))
-                ])
-                security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
+        with open(os.path.join(_RESULTS_DIR, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
+            general_report_log.write('Result for {0}'.format(file).encode('ascii'))
+            general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
 
-            for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
-                if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                    os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, file, 'security_report', result_file))
+            general_report_cmd = Command('java', [
+                '-Xmx4g',
+                '-ea',
+                '-cp',
+                main_cp,
+                'reporters.generalReport',
+                '-w',
+                '-cp',
+                soot_cp,
+                '-p',
+                'cg',
+                'verbose:false,implicit-entry:true',
+                '-p',
+                'cg.spark',
+                'verbose:false,on-fly-cg:true,rta:false',
+                '-d',
+                os.path.join(_TRACE_DIR, "{0}.logcat".format(file)),
+                '-process-dir',
+                os.path.join(INPUT_DIR, file),
+                '-trace',
+                os.path.join(_TRACE_DIR, "{0}.logcat".format(file))
+            ])
+            general_report_cmd.invoke(stdout=general_report_log, stderr=general_report_log)
+
+        for result_file in ['calleerank.txt', 'callerrank.txt', 'calleerankIns.txt', 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt', 'gdistcovIns.txt', 'gfeatures.txt']:
+            if os.path.exists(os.path.join(WORKING_DIR, result_file)):
+                os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(_RESULTS_DIR, file, 'general_report', result_file))
+
+        # Security Results
+        try:
+            os.mkdir(os.path.join(_RESULTS_DIR, file, 'security_report'))
+        except OSError:
+            error_msg = 'Error while creating folder {0}'.format(os.path.join(_RESULTS_DIR, file, 'security_report'))
+            logging.error(error_msg)
+            raise Exception(error_msg)
+
+        with open(os.path.join(_RESULTS_DIR, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
+            security_report_log.write('Result for {0}'.format(file).encode('ascii'))
+            security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+
+            security_report_cmd = Command('java', [
+                '-Xmx5g',
+                '-ea',
+                '-cp',
+                main_cp,
+                'reporters.rankReport',
+                '-w',
+                '-cp',
+                soot_cp,
+                '-p',
+                'cg',
+                'verbose:false,implicit-entry:true',
+                '-p',
+                'cg.spark',
+                'verbose:false,on-fly-cg:true,rta:false',
+                '-d',
+                os.path.join(_TRACE_DIR, "{0}.logcat".format(file)),
+                '-catsrc',
+                os.path.join(WORKING_DIR, 'data', 'catsources.txt.final'),
+                '-catsink',
+                os.path.join(WORKING_DIR, 'data', 'catsinks.txt.final'),
+                '-catcallback',
+                os.path.join(WORKING_DIR, 'data', 'catCallbacks.txt'),
+                '-process-dir',
+                os.path.join(INPUT_DIR, file),
+                '-trace',
+                os.path.join(_TRACE_DIR, "{0}.logcat".format(file))
+            ])
+            security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
+
+        for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
+            if os.path.exists(os.path.join(WORKING_DIR, result_file)):
+                os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(_RESULTS_DIR, file, 'security_report', result_file))
 
     @classmethod
     def _start_emulator(cls):
