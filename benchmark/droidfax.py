@@ -319,7 +319,7 @@ class DroidFax:
             'root',
         ])
         result = root_cmd.invoke()
-        readlink_cmd = Command('greadlink', ['-f', file])
+        readlink_cmd = Command('readlink', ['-f', file])
         readlink_result = readlink_cmd.invoke()
         install_cmd = Command('adb', [
             '-s',
@@ -338,7 +338,7 @@ class DroidFax:
 
     @classmethod
     def _get_package_name(cls, fileName):
-        readlink_cmd = Command('greadlink', ['-f', fileName])
+        readlink_cmd = Command('readlink', ['-f', fileName])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')
         
