@@ -120,12 +120,11 @@ class DroidFax:
         try:
             if not os.path.exists(TRACE_DIR):
                 os.mkdir(TRACE_DIR)
-                for tool in tools:
+            for tool in tools:
+                if not os.path.exists(os.path.join(TRACE_DIR, tool)):
                     os.mkdir(os.path.join(TRACE_DIR, tool))
-            else:
-                for tool in tools:
-                    for file in os.listdir(os.path.join(TRACE_DIR, tool)):
-                        os.remove(os.path.join(TRACE_DIR, tool, file))
+                for file in os.listdir(os.path.join(TRACE_DIR, tool)):
+                    os.remove(os.path.join(TRACE_DIR, tool, file))
 
         except OSError:
             error_msg = 'Error while creating folder {0}'.format(TRACE_DIR)
