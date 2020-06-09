@@ -1,17 +1,21 @@
 import os
+import re
+
+from benchmark.commands.command import Command
 
 from settings import INSTRUMENTED_DIR, TRACE_DIR
 
 from ..tool_spec import AbstractTool
 
-class ToolSpec(AbstractTool, object):
+
+class ToolSpec(AbstractTool):
     def __init__(self):
         super(ToolSpec, self).__init__("monkey", """Monkey is a program that runs on your emulator 
         or device and generates pseudo-random streams of user events such as clicks, touches, or gestures, 
         as well as a number of system-level events. (https://developer.android.com/studio/test/monkey)""",
                                        'com.android.commands.monkey')
         
-    def __execute_tool_specific_logic(self, fileName, timeout):
+    def execute_tool_specific_logic(self, fileName, timeout):
         package_name = self._get_package_name(os.path.join(INSTRUMENTED_DIR, fileName))
         trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
         with open(trace_file, 'wb') as trace:
@@ -28,7 +32,7 @@ class ToolSpec(AbstractTool, object):
             exec_cmd.invoke(stdout=trace)
 
 
-    def _get_package_name(fileName):
+    def _get_package_name(self, fileName):
         readlink_cmd = Command('greadlink', ['-f', fileName])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')

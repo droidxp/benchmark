@@ -4,7 +4,8 @@ from abc import ABCMeta, abstractmethod
 
 from benchmark.commands.command import Command
 
-class AbstractTool(object):
+class AbstractTool():
+    __metaclass__ = ABCMeta 
     '''
     This class defines a contract that all tools should follow. 
 
@@ -20,7 +21,7 @@ class AbstractTool(object):
         super(AbstractTool, self).__init__()
     
     @abstractmethod
-    def __execute_tool_specific_logic(self, fileName, timeout):
+    def execute_tool_specific_logic(self, fileName, timeout):
         '''This is our hook method, an extention point that every tool developer 
         must provide an implementation. It should only be called by the execute 
         instance method. 
@@ -38,7 +39,7 @@ class AbstractTool(object):
            timeout(int): execution timeout
            trace_dir(str): the trace directory
         '''
-        self.__execute_tool_specific_logic(fileName, timeout)
+        self.execute_tool_specific_logic(fileName, timeout)
         self.kill_related_processes(self.process_pattern)
 
     def kill_related_processes(self, process_pattern):

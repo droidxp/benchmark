@@ -8,6 +8,7 @@ import importlib
 
 from benchmark.droidfax import DroidFax
 
+
 def qualifiedName(p):
     return p.replace(".py", "").replace("./", "").replace("/", ".")
 
