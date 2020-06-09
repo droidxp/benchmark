@@ -1,0 +1,50 @@
+{
+  "tag": "2020-05-28_172326",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 1,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.FrameLayout",
+      "children": [
+        49
+      ],
+      "editable": false,
+      "bounds": [
+        [
+          320,
+          665
+        ],
+        [
+          480,
+          725
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/flClean",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 39,
+      "temp_id": 48,
+      "size": "160*60",
+      "signature": "[class]android.widget.FrameLayout[resource_id]andrei.brusentcov.lnguagepazzle.en:id/flClean[text]None[enabled,,]",
+      "view_str": "80fef3d7edf1aa9477209813927b4151",
+      "content_free_signature": "[class]android.widget.FrameLayout[resource_id]andrei.brusentcov.lnguagepazzle.en:id/flClean"
+    }
+  },
+  "start_state": "ec6a12ecc0c7bdd7f59d3f9877ae58e3",
+  "stop_state": "ec6a12ecc0c7bdd7f59d3f9877ae58e3",
+  "event_str": "TouchEvent(state=ec6a12ecc0c7bdd7f59d3f9877ae58e3, view=80fef3d7edf1aa9477209813927b4151)"
+}

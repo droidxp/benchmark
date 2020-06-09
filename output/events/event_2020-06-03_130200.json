@@ -1,0 +1,48 @@
+{
+  "tag": "2020-06-03_130200",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": true,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Web Search",
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          396,
+          38
+        ],
+        [
+          480,
+          110
+        ]
+      ],
+      "resource_id": "android:id/webviewchromium_select_action_menu_web_search",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 39,
+      "temp_id": 43,
+      "size": "84*72",
+      "signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_web_search[text]None[enabled,,]",
+      "view_str": "457747377922dc05fe4c213ddfbb99bc",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_web_search"
+    }
+  },
+  "start_state": "17cbf1f39e5fe500c01392be0eed699d",
+  "stop_state": "c1a9b2dcd422f8512d1818d4e81ac9b5",
+  "event_str": "TouchEvent(state=17cbf1f39e5fe500c01392be0eed699d, view=457747377922dc05fe4c213ddfbb99bc)"
+}

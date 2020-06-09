@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173600",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": "Do you want to buy the paid version?",
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          68,
+          326
+        ],
+        [
+          412,
+          395
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/txtMessage",
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": 9,
+      "temp_id": 10,
+      "size": "344*69",
+      "signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtMessage[text]Do you want to buy the paid version?[enabled,,]",
+      "view_str": "3a86cd48ab34b8870c2d76bda00e8101",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtMessage"
+    }
+  },
+  "start_state": "4cc2dbd5e6eb20bebf203803b095cee6",
+  "stop_state": "4cc2dbd5e6eb20bebf203803b095cee6",
+  "event_str": "TouchEvent(state=4cc2dbd5e6eb20bebf203803b095cee6, view=3a86cd48ab34b8870c2d76bda00e8101)"
+}

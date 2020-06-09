@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_174502",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": "Web View",
+      "scrollable": false,
+      "class": "android.webkit.WebView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          0,
+          115
+        ],
+        [
+          480,
+          741
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/webViewTutorial",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": true,
+      "checked": false,
+      "parent": 3,
+      "temp_id": 6,
+      "size": "480*626",
+      "signature": "[class]android.webkit.WebView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/webViewTutorial[text]None[enabled,,]",
+      "view_str": "789566dc348d678bdbef1e753869312e",
+      "content_free_signature": "[class]android.webkit.WebView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/webViewTutorial"
+    }
+  },
+  "start_state": "10c5956ca4aa8886d8262a018dc90bb0",
+  "stop_state": "795a36d85c8baaed7c4a5c645de6a768",
+  "event_str": "TouchEvent(state=10c5956ca4aa8886d8262a018dc90bb0, view=789566dc348d678bdbef1e753869312e)"
+}

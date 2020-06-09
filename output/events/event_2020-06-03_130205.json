@@ -1,0 +1,10 @@
+{
+  "tag": "2020-06-03_130205",
+  "event": {
+    "event_type": "intent",
+    "intent": "am start com.google.android.diskusage/com.google.android.diskusage..SelectActivity"
+  },
+  "start_state": "30826b43258f7ec41b9883913c8e141f",
+  "stop_state": "30826b43258f7ec41b9883913c8e141f",
+  "event_str": "IntentEvent(intent='am start com.google.android.diskusage/com.google.android.diskusage..SelectActivity')"
+}

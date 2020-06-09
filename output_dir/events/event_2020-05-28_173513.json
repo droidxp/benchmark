@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173513",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": "YouTube",
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          76,
+          242
+        ],
+        [
+          256,
+          303
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/txtHeader",
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": 7,
+      "temp_id": 8,
+      "size": "180*61",
+      "signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtHeader[text]YouTube[enabled,,]",
+      "view_str": "fdc023bbef34d39b6b83bde7a0007ead",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtHeader"
+    }
+  },
+  "start_state": "ea459beceb5a5e9ead30390ec17d7857",
+  "stop_state": "ea459beceb5a5e9ead30390ec17d7857",
+  "event_str": "TouchEvent(state=ea459beceb5a5e9ead30390ec17d7857, view=fdc023bbef34d39b6b83bde7a0007ead)"
+}

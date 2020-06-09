@@ -1,0 +1,10 @@
+{
+  "tag": "2020-05-28_172504",
+  "event": {
+    "event_type": "key",
+    "name": "BACK"
+  },
+  "start_state": "4c8710e320c24f2db3a4497dd867ad06",
+  "stop_state": "bc6b3b64ff7c9594dc8539a701993bd4",
+  "event_str": "KeyEvent(state=4c8710e320c24f2db3a4497dd867ad06, name=BACK)"
+}

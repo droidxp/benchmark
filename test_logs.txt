@@ -1,0 +1,2 @@
+WARNING: linker: libdvm.so has text relocations. This is wasting memory and is a security risk. Please fix.
+** No activities found to run, monkey aborted.

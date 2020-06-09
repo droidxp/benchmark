@@ -50,6 +50,9 @@ class Command:
         # Add arguments
         cmd_args.extend(self._args)
 
+        if (self._command == "droidbot"):
+            logging.debug('*Command executed: {0}'.format(' '.join(cmd_args)))
+
         logging.debug('Command executed: {0}'.format(' '.join(cmd_args)))
 
         # Only use this when the program is running on Python 3.3+

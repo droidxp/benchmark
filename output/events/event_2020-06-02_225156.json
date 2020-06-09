@@ -1,0 +1,48 @@
+{
+  "tag": "2020-06-02_225156",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": true,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Web View",
+      "scrollable": false,
+      "class": "android.webkit.WebView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          0,
+          116
+        ],
+        [
+          480,
+          800
+        ]
+      ],
+      "resource_id": null,
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": true,
+      "checked": false,
+      "parent": 18,
+      "temp_id": 19,
+      "size": "480*684",
+      "signature": "[class]android.webkit.WebView[resource_id]None[text]None[enabled,,]",
+      "view_str": "727bb8c26bc7ee9707ec1e64a972149f",
+      "content_free_signature": "[class]android.webkit.WebView[resource_id]None"
+    }
+  },
+  "start_state": "8b33418a24d6919768339704f483d7ef",
+  "stop_state": "8b33418a24d6919768339704f483d7ef",
+  "event_str": "TouchEvent(state=8b33418a24d6919768339704f483d7ef, view=727bb8c26bc7ee9707ec1e64a972149f)"
+}

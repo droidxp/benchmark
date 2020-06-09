@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173543",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": "English cards 'Fresh English'. ESL vocabulary tutor (free). 'Fresh English' is a \u2026",
+      "child_count": 0,
+      "visible": false,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          148,
+          699
+        ],
+        [
+          444,
+          776
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/txtDescription",
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": 40,
+      "temp_id": 41,
+      "size": "296*77",
+      "signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtDescription[text]None[enabled,,]",
+      "view_str": "757dd21b4355d235a9c18aaf6bccca17",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtDescription"
+    }
+  },
+  "start_state": "9007b226564ebe85014c73bf428043c5",
+  "stop_state": "7ef29fdd05e071fd7855463923285e69",
+  "event_str": "TouchEvent(state=9007b226564ebe85014c73bf428043c5, view=757dd21b4355d235a9c18aaf6bccca17)"
+}

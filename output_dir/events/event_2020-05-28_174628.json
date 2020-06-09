@@ -1,0 +1,51 @@
+{
+  "tag": "2020-05-28_174628",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 2,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Page info",
+      "scrollable": false,
+      "class": "android.widget.FrameLayout",
+      "children": [
+        11,
+        12
+      ],
+      "editable": false,
+      "bounds": [
+        [
+          14,
+          38
+        ],
+        [
+          80,
+          116
+        ]
+      ],
+      "resource_id": "com.android.browser:id/iconcombo",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 9,
+      "temp_id": 10,
+      "size": "66*78",
+      "signature": "[class]android.widget.FrameLayout[resource_id]com.android.browser:id/iconcombo[text]None[enabled,,]",
+      "view_str": "4ac4fc3ad34e0d867d9e33a1b4e6db5b",
+      "content_free_signature": "[class]android.widget.FrameLayout[resource_id]com.android.browser:id/iconcombo"
+    }
+  },
+  "start_state": "c04b8baeb7216f3ca877307a86f49785",
+  "stop_state": "f94c4bbba2cde3f544e9d8ae826e6ba7",
+  "event_str": "TouchEvent(state=c04b8baeb7216f3ca877307a86f49785, view=4ac4fc3ad34e0d867d9e33a1b4e6db5b)"
+}

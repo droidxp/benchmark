@@ -1,0 +1,10 @@
+{
+  "tag": "2020-05-28_174604",
+  "event": {
+    "event_type": "key",
+    "name": "MENU"
+  },
+  "start_state": "1c8c83c4aae4f45be62457dbb32660fa",
+  "stop_state": "1c8c83c4aae4f45be62457dbb32660fa",
+  "event_str": "KeyEvent(state=1c8c83c4aae4f45be62457dbb32660fa, name=MENU)"
+}

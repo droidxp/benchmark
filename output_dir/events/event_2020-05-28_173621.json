@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173621",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": true,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Share",
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          312,
+          38
+        ],
+        [
+          396,
+          110
+        ]
+      ],
+      "resource_id": "android:id/webviewchromium_select_action_menu_share",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 39,
+      "temp_id": 42,
+      "size": "84*72",
+      "signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_share[text]None[enabled,,]",
+      "view_str": "b358316d392341fbb160a1a4c1ea6883",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_share"
+    }
+  },
+  "start_state": "17cbf1f39e5fe500c01392be0eed699d",
+  "stop_state": "e2d847e9e215274a9031ac312c3d757a",
+  "event_str": "TouchEvent(state=17cbf1f39e5fe500c01392be0eed699d, view=b358316d392341fbb160a1a4c1ea6883)"
+}

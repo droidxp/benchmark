@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173433",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 0,
+      "visible": false,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.FrameLayout",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          0,
+          800
+        ],
+        [
+          480,
+          800
+        ]
+      ],
+      "resource_id": null,
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": -1,
+      "temp_id": 0,
+      "size": "480*0",
+      "signature": "[class]android.widget.FrameLayout[resource_id]None[text]None[enabled,,]",
+      "view_str": "373697085be0397f9f0fd0eb30eddccd",
+      "content_free_signature": "[class]android.widget.FrameLayout[resource_id]None"
+    }
+  },
+  "start_state": "08355c7c57fb4fe9e3a2edf750106669",
+  "stop_state": "08355c7c57fb4fe9e3a2edf750106669",
+  "event_str": "TouchEvent(state=08355c7c57fb4fe9e3a2edf750106669, view=373697085be0397f9f0fd0eb30eddccd)"
+}

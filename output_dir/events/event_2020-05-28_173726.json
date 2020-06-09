@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173726",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": "1. English lessons",
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          31,
+          155
+        ],
+        [
+          273,
+          196
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/txtAppName",
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": 11,
+      "temp_id": 12,
+      "size": "242*41",
+      "signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtAppName[text]1. English lessons[enabled,,]",
+      "view_str": "c47c924895173fd0c085d85ace25c773",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]andrei.brusentcov.lnguagepazzle.en:id/txtAppName"
+    }
+  },
+  "start_state": "9007b226564ebe85014c73bf428043c5",
+  "stop_state": "9007b226564ebe85014c73bf428043c5",
+  "event_str": "TouchEvent(state=9007b226564ebe85014c73bf428043c5, view=c47c924895173fd0c085d85ace25c773)"
+}

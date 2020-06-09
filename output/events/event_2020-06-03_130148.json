@@ -1,0 +1,10 @@
+{
+  "tag": "2020-06-03_130148",
+  "event": {
+    "event_type": "key",
+    "name": "HOME"
+  },
+  "start_state": "c04b8baeb7216f3ca877307a86f49785",
+  "stop_state": "e18ca8a0abeff66a08257c570b843d57",
+  "event_str": "KeyEvent(state=c04b8baeb7216f3ca877307a86f49785, name=HOME)"
+}

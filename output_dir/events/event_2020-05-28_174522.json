@@ -1,0 +1,50 @@
+{
+  "tag": "2020-05-28_174522",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 1,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": "Done",
+      "scrollable": false,
+      "class": "android.widget.LinearLayout",
+      "children": [
+        4
+      ],
+      "editable": false,
+      "bounds": [
+        [
+          0,
+          38
+        ],
+        [
+          84,
+          110
+        ]
+      ],
+      "resource_id": "android:id/action_mode_close_button",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 2,
+      "temp_id": 3,
+      "size": "84*72",
+      "signature": "[class]android.widget.LinearLayout[resource_id]android:id/action_mode_close_button[text]None[enabled,,]",
+      "view_str": "9660e7b2008f7da0eccad7d7e841a335",
+      "content_free_signature": "[class]android.widget.LinearLayout[resource_id]android:id/action_mode_close_button"
+    }
+  },
+  "start_state": "795a36d85c8baaed7c4a5c645de6a768",
+  "stop_state": "10c5956ca4aa8886d8262a018dc90bb0",
+  "event_str": "TouchEvent(state=795a36d85c8baaed7c4a5c645de6a768, view=9660e7b2008f7da0eccad7d7e841a335)"
+}

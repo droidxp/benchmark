@@ -1,0 +1,10 @@
+{
+  "tag": "2020-05-28_173918",
+  "event": {
+    "event_type": "intent",
+    "intent": "am start andrei.brusentcov.lnguagepazzle.en/andrei.brusentcov.lnguagepazzle.MenuActivity"
+  },
+  "start_state": "8f3330e3b0fd54c5a78bc96727325aef",
+  "stop_state": "8f3330e3b0fd54c5a78bc96727325aef",
+  "event_str": "IntentEvent(intent='am start andrei.brusentcov.lnguagepazzle.en/andrei.brusentcov.lnguagepazzle.MenuActivity')"
+}

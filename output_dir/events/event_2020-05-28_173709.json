@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173709",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Page manager",
+      "scrollable": false,
+      "class": "android.widget.ImageButton",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          408,
+          38
+        ],
+        [
+          480,
+          116
+        ]
+      ],
+      "resource_id": "com.android.browser:id/tab_switcher",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 8,
+      "temp_id": 14,
+      "size": "72*78",
+      "signature": "[class]android.widget.ImageButton[resource_id]com.android.browser:id/tab_switcher[text]None[enabled,,]",
+      "view_str": "5df63f63bce72ab08058bd027fbc2da7",
+      "content_free_signature": "[class]android.widget.ImageButton[resource_id]com.android.browser:id/tab_switcher"
+    }
+  },
+  "start_state": "c04b8baeb7216f3ca877307a86f49785",
+  "stop_state": "78dc2651696b1792016c48f0fec6b496",
+  "event_str": "TouchEvent(state=c04b8baeb7216f3ca877307a86f49785, view=5df63f63bce72ab08058bd027fbc2da7)"
+}

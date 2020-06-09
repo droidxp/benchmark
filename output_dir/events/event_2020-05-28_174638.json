@@ -1,0 +1,49 @@
+{
+  "tag": "2020-05-28_174638",
+  "event": {
+    "event_type": "long_touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": true,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": "Web Search",
+      "scrollable": false,
+      "class": "android.widget.TextView",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          396,
+          39
+        ],
+        [
+          480,
+          109
+        ]
+      ],
+      "resource_id": "android:id/webviewchromium_select_action_menu_web_search",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 5,
+      "temp_id": 9,
+      "size": "84*70",
+      "signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_web_search[text]None[enabled,,]",
+      "view_str": "a2735df78037976a5f1fffe79db76045",
+      "content_free_signature": "[class]android.widget.TextView[resource_id]android:id/webviewchromium_select_action_menu_web_search"
+    },
+    "duration": 2000
+  },
+  "start_state": "795a36d85c8baaed7c4a5c645de6a768",
+  "stop_state": "795a36d85c8baaed7c4a5c645de6a768",
+  "event_str": "LongTouchEvent(state=795a36d85c8baaed7c4a5c645de6a768, view=a2735df78037976a5f1fffe79db76045, duration=2000)"
+}

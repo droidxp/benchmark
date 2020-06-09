@@ -1,6 +1,6 @@
 import os
 
-ANDROID_JAR_PATH = '{0}/Android/Sdk/platforms/android-19/android.jar'.format(os.environ['HOME'])
+ANDROID_JAR_PATH = '/Users/marcos/Library/Android/sdk/platforms/android-29/android.jar'.format(os.environ['HOME'])
 
 WORKING_DIR = os.getcwd()
 LIBS_DIR = os.path.join(WORKING_DIR, 'libs')

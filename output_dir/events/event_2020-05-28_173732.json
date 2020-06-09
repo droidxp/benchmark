@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_173732",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": "https://play.google.com/store/apps/details?id=andrei.brusentcov.languagetutor.en",
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": true,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.EditText",
+      "children": [],
+      "editable": true,
+      "bounds": [
+        [
+          80,
+          38
+        ],
+        [
+          394,
+          116
+        ]
+      ],
+      "resource_id": "com.android.browser:id/url",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 9,
+      "temp_id": 13,
+      "size": "314*78",
+      "signature": "[class]android.widget.EditText[resource_id]com.android.browser:id/url[text]None[enabled,,]",
+      "view_str": "3b3abc87c59205581e209b9a88c71849",
+      "content_free_signature": "[class]android.widget.EditText[resource_id]com.android.browser:id/url"
+    }
+  },
+  "start_state": "922dffb31da496faac628d878131e781",
+  "stop_state": "b5ef30b208f324e6a78daf573ed50123",
+  "event_str": "TouchEvent(state=922dffb31da496faac628d878131e781, view=3b3abc87c59205581e209b9a88c71849)"
+}

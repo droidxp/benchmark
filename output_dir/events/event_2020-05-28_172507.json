@@ -1,0 +1,10 @@
+{
+  "tag": "2020-05-28_172507",
+  "event": {
+    "event_type": "intent",
+    "intent": "am force-stop andrei.brusentcov.lnguagepazzle.en"
+  },
+  "start_state": "4c8710e320c24f2db3a4497dd867ad06",
+  "stop_state": "bc6b3b64ff7c9594dc8539a701993bd4",
+  "event_str": "IntentEvent(intent='am force-stop andrei.brusentcov.lnguagepazzle.en')"
+}

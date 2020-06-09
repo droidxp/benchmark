@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_172744",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.FrameLayout",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          373,
+          357
+        ],
+        [
+          478,
+          460
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/flYouTube",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 23,
+      "temp_id": 26,
+      "size": "105*103",
+      "signature": "[class]android.widget.FrameLayout[resource_id]andrei.brusentcov.lnguagepazzle.en:id/flYouTube[text]None[enabled,,]",
+      "view_str": "c18cd9ec753d71520e6473a1117d8fc9",
+      "content_free_signature": "[class]android.widget.FrameLayout[resource_id]andrei.brusentcov.lnguagepazzle.en:id/flYouTube"
+    }
+  },
+  "start_state": "7ef29fdd05e071fd7855463923285e69",
+  "stop_state": "ea459beceb5a5e9ead30390ec17d7857",
+  "event_str": "TouchEvent(state=7ef29fdd05e071fd7855463923285e69, view=c18cd9ec753d71520e6473a1117d8fc9)"
+}

@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_172951",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "andrei.brusentcov.lnguagepazzle.en",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.ProgressBar",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          182,
+          400
+        ],
+        [
+          296,
+          514
+        ]
+      ],
+      "resource_id": "andrei.brusentcov.lnguagepazzle.en:id/progressBar1",
+      "selected": false,
+      "is_password": false,
+      "clickable": false,
+      "focused": false,
+      "checked": false,
+      "parent": 5,
+      "temp_id": 7,
+      "size": "114*114",
+      "signature": "[class]android.widget.ProgressBar[resource_id]andrei.brusentcov.lnguagepazzle.en:id/progressBar1[text]None[enabled,,]",
+      "view_str": "07b646e6dcbab054824671220532c1bb",
+      "content_free_signature": "[class]android.widget.ProgressBar[resource_id]andrei.brusentcov.lnguagepazzle.en:id/progressBar1"
+    }
+  },
+  "start_state": "8a2bf67010a12908460ad6d7c76fc088",
+  "stop_state": "10c5956ca4aa8886d8262a018dc90bb0",
+  "event_str": "TouchEvent(state=8a2bf67010a12908460ad6d7c76fc088, view=07b646e6dcbab054824671220532c1bb)"
+}

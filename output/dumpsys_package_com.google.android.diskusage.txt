@@ -1,0 +1,35 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        ad10fe08 com.google.android.diskusage/.SelectActivity filter ad0efb80
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Key Set Manager:
+  [com.google.android.diskusage]
+      Signing KeySets: 74
+
+Packages:
+  Package [com.google.android.diskusage] (ad9b3020):
+    userId=10114 gids=[1028, 1015]
+    pkg=Package{ad832cc0 com.google.android.diskusage}
+    codePath=/data/app/com.google.android.diskusage-1.apk
+    resourcePath=/data/app/com.google.android.diskusage-1.apk
+    nativeLibraryPath=/data/app-lib/com.google.android.diskusage-1
+    versionCode=3020 targetSdk=11
+    versionName=3.2
+    applicationInfo=ApplicationInfo{ad7e7a00 com.google.android.diskusage}
+    flags=[ HAS_CODE ALLOW_TASK_REPARENTING ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    dataDir=/data/data/com.google.android.diskusage
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    timeStamp=2020-06-03 19:14:37
+    firstInstallTime=2020-06-03 19:14:37
+    lastUpdateTime=2020-06-03 19:14:37
+    signatures=PackageSignatures{acf7f170 [ad231638]}
+    permissionsFixed=true haveGids=true installStatus=1
+    pkgFlags=[ HAS_CODE ALLOW_TASK_REPARENTING ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0:  installed=true blocked=false stopped=true notLaunched=true enabled=0
+    grantedPermissions:
+      android.permission.READ_EXTERNAL_STORAGE
+      android.permission.GET_PACKAGE_SIZE
+      android.permission.WRITE_EXTERNAL_STORAGE

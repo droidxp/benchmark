@@ -1,0 +1,34 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        ad3ad860 andrei.brusentcov.lnguagepazzle.en/andrei.brusentcov.lnguagepazzle.MenuActivity filter ad3a3578
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Key Set Manager:
+  [andrei.brusentcov.lnguagepazzle.en]
+      Signing KeySets: 26
+
+Packages:
+  Package [andrei.brusentcov.lnguagepazzle.en] (ad89c150):
+    userId=10077 gids=[3003]
+    pkg=Package{ad51a170 andrei.brusentcov.lnguagepazzle.en}
+    codePath=/data/app/andrei.brusentcov.lnguagepazzle.en-1.apk
+    resourcePath=/data/app/andrei.brusentcov.lnguagepazzle.en-1.apk
+    nativeLibraryPath=/data/app-lib/andrei.brusentcov.lnguagepazzle.en-1
+    versionCode=1 targetSdk=17
+    versionName=1.0
+    applicationInfo=ApplicationInfo{ad6b61e0 andrei.brusentcov.lnguagepazzle.en}
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    dataDir=/data/data/andrei.brusentcov.lnguagepazzle.en
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    timeStamp=2020-05-28 17:22:37
+    firstInstallTime=2020-05-28 17:22:37
+    lastUpdateTime=2020-05-28 17:22:37
+    signatures=PackageSignatures{ad803d60 [ada42b48]}
+    permissionsFixed=true haveGids=true installStatus=1
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    User 0:  installed=true blocked=false stopped=true notLaunched=true enabled=0
+    grantedPermissions:
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE

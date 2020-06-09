@@ -6,7 +6,7 @@ TOOLHOME=$(pwd)
 LIBDIR=../libs
 
 # directory where android.jar is located
-ANDROIDJAR=$HOME/Android/Sdk/platforms/android-19/android.jar
+ANDROIDJAR=/Users/marcos/Library/Android/sdk/platforms/android-29/android.jar
 
 # keystore created using keytool for signing instrumented APKs
 KEYSTORE=../keystores/droidfax.jks

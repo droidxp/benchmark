@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_174309",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": true,
+      "text": "OK",
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": null,
+      "scrollable": false,
+      "class": "android.widget.Button",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          24,
+          535
+        ],
+        [
+          456,
+          607
+        ]
+      ],
+      "resource_id": "android:id/button1",
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 18,
+      "temp_id": 19,
+      "size": "432*72",
+      "signature": "[class]android.widget.Button[resource_id]android:id/button1[text]OK[enabled,,]",
+      "view_str": "b262633fa450f9a240781beb14698910",
+      "content_free_signature": "[class]android.widget.Button[resource_id]android:id/button1"
+    }
+  },
+  "start_state": "d9f086a159ca9611a5cffbfc214b46dc",
+  "stop_state": "c04b8baeb7216f3ca877307a86f49785",
+  "event_str": "TouchEvent(state=d9f086a159ca9611a5cffbfc214b46dc, view=b262633fa450f9a240781beb14698910)"
+}

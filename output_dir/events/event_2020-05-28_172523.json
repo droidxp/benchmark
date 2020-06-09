@@ -1,0 +1,48 @@
+{
+  "tag": "2020-05-28_172523",
+  "event": {
+    "event_type": "touch",
+    "x": null,
+    "y": null,
+    "view": {
+      "enabled": true,
+      "focusable": false,
+      "text": null,
+      "child_count": 0,
+      "visible": true,
+      "long_clickable": false,
+      "checkable": false,
+      "package": "com.android.browser",
+      "content_description": "Check the address you entered",
+      "scrollable": false,
+      "class": "android.view.View",
+      "children": [],
+      "editable": false,
+      "bounds": [
+        [
+          72,
+          543
+        ],
+        [
+          403,
+          575
+        ]
+      ],
+      "resource_id": null,
+      "selected": false,
+      "is_password": false,
+      "clickable": true,
+      "focused": false,
+      "checked": false,
+      "parent": 33,
+      "temp_id": 35,
+      "size": "331*32",
+      "signature": "[class]android.view.View[resource_id]None[text]None[enabled,,]",
+      "view_str": "020ca6733c7c6911b315d1d9fa39f014",
+      "content_free_signature": "[class]android.view.View[resource_id]None"
+    }
+  },
+  "start_state": "c04b8baeb7216f3ca877307a86f49785",
+  "stop_state": "17cbf1f39e5fe500c01392be0eed699d",
+  "event_str": "TouchEvent(state=c04b8baeb7216f3ca877307a86f49785, view=020ca6733c7c6911b315d1d9fa39f014)"
+}

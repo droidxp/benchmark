@@ -21,7 +21,7 @@ class DroidFax:
 
         cls.phase_one_instrumentation(path)
         cls.phase_two_execution(timeout, tools)
-        # cls.phase_three_results()
+        cls.phase_three_results()
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -114,7 +114,9 @@ class DroidFax:
         # Verification of the timeout time ratio according to the number of apks in the input folder
         apks_qnt = len(os.listdir(INSTRUMENTED_DIR))
         tools_qnt = len(tools)
-        timeout_by_apk = (timeout/apks_qnt)/tools_qnt
+        timeout_by_apk = (timeout/apks_qnt)
+
+        logging.info("TIMEOUT {0}".format(int(tools_qnt)))
 
         # Create a folder to store execution trace
         try:
@@ -153,7 +155,7 @@ class DroidFax:
                     cls._exec_test_generator(file, timeout_by_apk)
                     
                     end = time.time()
-                    logging.debug("Execution took {0} seconds".format(int(end-start)))
+                    logging.info("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
                 # logging.info('Uninstalling {0}'.format(file))
@@ -173,7 +175,7 @@ class DroidFax:
                     cls._exec_test_generator_droidbot(file, timeout_by_apk)
 
                     end = time.time()
-                    logging.debug("Execution took {0} seconds".format(int(end-start)))
+                    logging.info("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
             logging.info('Uninstalling {0}'.format(file))
@@ -370,8 +372,11 @@ class DroidFax:
                 'emulator-5554',
                 '-a',
                 package_name,
-                '-timeout',
-                str(timeout)
+                '-policy',
+                'monkey',
+                '-is_emulator',
+                # '-interval',
+                # '0.5'
             ], timeout)
             exec_cmd.invoke(stdout=droidbot_trace)
 
