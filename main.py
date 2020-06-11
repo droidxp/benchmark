@@ -3,19 +3,17 @@ import logging
 import time
 import sys
 import argparse
-import pathlib
 import importlib
 
 from benchmark.droidfax import DroidFax
 
 
-def qualifiedName(p):
+def qualified_name(p):
     return p.replace(".py", "").replace("./", "").replace("/", ".")
-
 
 tools = {}
 
-def loadTools():
+def load_tools():
     '''Load all available tools. 
       
      A tool must be defined in a subdirectory within 
@@ -26,14 +24,14 @@ def loadTools():
     for subdir, dirs, files in os.walk('.' + os.sep + 'tools'):
         for filename in files:
             if filename == 'tool.py':
-                tool_module = importlib.import_module(qualifiedName(subdir + os.sep + filename))
+                tool_module = importlib.import_module(qualified_name(subdir + os.sep + filename))
                 tool_class = getattr(tool_module, 'ToolSpec')
                 tool_instance = tool_class()
                 tools[tool_instance.name] = tool_instance
                         
 if __name__ == '__main__':
 
-    loadTools()
+    load_tools()
     
     # Start catching arguments
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')

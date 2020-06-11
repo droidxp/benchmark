@@ -13,9 +13,9 @@ class ToolSpec(AbstractTool):
         It can send random or scripted input events to an Android app, achieve higher test coverage more quickly, 
         and generate a UI transition graph (UTG) after testing (https://github.com/honeynet/droidbot).""", 'com.android.commands.droidbot')
         
-    def execute_tool_specific_logic(self, fileName, timeout):
-        package_name = os.path.join('data', 'instrumented', fileName)
-        trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
+    def execute_tool_specific_logic(self, file_name, timeout):
+        package_name = os.path.join('data', 'instrumented', file_name)
+        trace_file = os.path.join(TRACE_DIR, self.name, file_name + "." + self.name)
         with open(trace_file, 'wb') as trace:
             exec_cmd = Command('droidbot', [
                 '-d',

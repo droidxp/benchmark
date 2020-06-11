@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from settings import INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, EXECUTION_TIMEOUT, RESULTS_DIR, WORKING_DIR
+from settings import INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
 import signal
 import re
@@ -11,7 +11,7 @@ import shutil
 class DroidFax:
 
     @classmethod
-    def run(cls, toolSet, *args):
+    def run(cls, tool_set, *args):
         # Arg parse
         path = WORKING_DIR+args[0].path
         repetitions = args[0].r
@@ -20,8 +20,8 @@ class DroidFax:
         # End Arg parse
 
         cls.phase_one_instrumentation(path)
-        cls.phase_two_execution(timeout, toolSet, tools)
-        # cls.phase_three_results()
+        cls.phase_two_execution(timeout, tool_set, tools)
+        cls.phase_three_results()
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -108,7 +108,7 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls, timeout, toolSet, tools):
+    def phase_two_execution(cls, timeout, tool_set, tools):
         logging.info('Droidfax\'s Phase 2: Execution')
 
         # Verification of the timeout time ratio according to the number of apks in the input folder
@@ -148,7 +148,7 @@ class DroidFax:
                     start = time.time()
 
                     logging.info("Testing with {0} {1} seconds".format(tool, int(timeout_by_apk)))
-                    toolSet[tool].execute(file, timeout_by_apk)
+                    tool_set[tool].execute(file, timeout_by_apk)
                     
                     end = time.time()
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
@@ -336,12 +336,12 @@ class DroidFax:
         uninstall_cmd.invoke()
 
     @classmethod
-    def _get_package_name(cls, fileName):
-        readlink_cmd = Command('readlink', ['-f', fileName])
+    def _get_package_name(cls, file_name):
+        readlink_cmd = Command('readlink', ['-f', file_name])
         readlink_result = readlink_cmd.invoke()
         readlink_result_str = readlink_result.stdout.strip().decode('ascii')
         
-        get_package_list_cmd = Command('aapt', ['list', '-a', fileName])
+        get_package_list_cmd = Command('aapt', ['list', '-a', file_name])
         get_package_list_result = get_package_list_cmd.invoke()
         get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
 

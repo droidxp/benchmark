@@ -21,14 +21,14 @@ class AbstractTool():
         super(AbstractTool, self).__init__()
     
     @abstractmethod
-    def execute_tool_specific_logic(self, fileName, timeout):
+    def execute_tool_specific_logic(self, file_name, timeout):
         '''This is our hook method, an extention point that every tool developer 
         must provide an implementation. It should only be called by the execute 
         instance method. 
         '''
         pass
     
-    def execute(self, fileName, timeout):
+    def execute(self, file_name, timeout):
         '''This is the operation that allows the execution of a tool. It works 
         as a template method, implementing a loging that delegates to 
         the abstract method of this class the actual logic. 
@@ -39,7 +39,7 @@ class AbstractTool():
            timeout(int): execution timeout
            trace_dir(str): the trace directory
         '''
-        self.execute_tool_specific_logic(fileName, timeout)
+        self.execute_tool_specific_logic(file_name, timeout)
         self.kill_related_processes(self.process_pattern)
 
     def kill_related_processes(self, process_pattern):

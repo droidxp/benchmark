@@ -15,9 +15,9 @@ class ToolSpec(AbstractTool):
         as well as a number of system-level events. (https://developer.android.com/studio/test/monkey)""",
                                        'com.android.commands.monkey')
         
-    def execute_tool_specific_logic(self, fileName, timeout):
-        package_name = self._get_package_name(os.path.join(INSTRUMENTED_DIR, fileName))
-        trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
+    def execute_tool_specific_logic(self, file_name, timeout):
+        package_name = self._get_package_name(os.path.join(INSTRUMENTED_DIR, file_name))
+        trace_file = os.path.join(TRACE_DIR, self.name, file_name + "." + self.name)
         with open(trace_file, 'wb') as trace:
             exec_cmd = Command('adb', [
                 'shell',
