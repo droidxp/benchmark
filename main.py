@@ -21,6 +21,7 @@ if __name__ == '__main__':
     # Quantidade de repeticoes para rodar os testes
     parser.add_argument('-r', default=1, help='(-r, -repeticoes) Quantidade de repeticoes para rodar os testes', type=int)
 
+    # Converter para opcoes small ou large alternando entre pasta com poucos ou muitos apks
     parser.add_argument('-path', default='/data/input', help='(path) Caminho da pasta contedo os apks de teste')
 
     args = parser.parse_args()
