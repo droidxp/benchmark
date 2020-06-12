@@ -22,7 +22,8 @@ class ToolSpec(AbstractTool):
                 'emulator-5554',
                 '-a',
                 package_name,
-                '-timeout',
-                str(timeout)
+                '-policy',
+                'monkey',
+                '-is_emulator',
             ], timeout)
             exec_cmd.invoke(stdout=trace)
