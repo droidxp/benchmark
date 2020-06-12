@@ -25,3 +25,21 @@ It's assumed that some commands are in your PATH environment variable: `adb`, `j
 To run the benchmark, execute the following command:
 
     python main.py
+
+## Tool Specific Dependencies
+
+### STOAT
+
+To run the benchmark with the stoat tool, the following dependencies must be satisfied.
+
+   * Ruby 2.1
+   * Nokogiri (try gem install nokogiri)
+   * Python uiautomator library (try pip install uiautomator)
+   * Android SDK 18+
+
+Clone the Stoat fork at `https://github.com/rbonifacio/Stoat.git`. It is also necessary to add the `bin` directory of the Stoat project to the PATH environment variable. Something like.
+
+```sh
+export STOAT_HOME=~/Documents/workspace-droidxp/Stoat/Stoat
+export PATH=$PATH:$STOAT_HOME/bin
+```
