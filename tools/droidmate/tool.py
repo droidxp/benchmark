@@ -3,7 +3,7 @@ import re
 
 from benchmark.commands.command import Command
 
-from settings import INPUT_DIR, TRACE_DIR
+from settings import INPUT_DIR, TRACE_DIR, WORKING_DIR
 
 from ..tool_spec import AbstractTool
 
@@ -14,7 +14,8 @@ class ToolSpec(AbstractTool):
 
     def execute_tool_specific_logic(self, fileName, timeout):
         trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
-        droidmate_jar = os.path.join('droidmate-2-X.X.X-all.jar')
+        droidmate_jar = os.path.join(WORKING_DIR, 'tools', 'droidmate', 'droidmate-2-X.X.X-all.jar')
+        outputDir = './temp'
         
         with open(trace_file, 'wb') as droidmate_trace:
             exec_cmd = Command('java',[
@@ -24,6 +25,11 @@ class ToolSpec(AbstractTool):
                 '--Selectors-timeLimit=10',
                 '--Exploration-apkNames={0}'.format(fileName),
                 '--Exploration-apksDir={0}'.format(INPUT_DIR),
-                '--Output-outputDir={0}'.format('./temp'),
+                '--Output-outputDir={0}'.format(outputDir),
             ],timeout=timeout)
             exec_cmd.invoke(stdout=droidmate_trace)
+
+        from shutil import rmtree
+        rmtree(outputDir)
+        rmtree('./out') # logsDir ./out/logs
+        del rmtree
