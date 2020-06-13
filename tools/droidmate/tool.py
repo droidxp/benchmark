@@ -15,7 +15,7 @@ class ToolSpec(AbstractTool):
     def execute_tool_specific_logic(self, fileName, timeout):
         trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
         droidmate_jar = os.path.join(WORKING_DIR, 'tools', 'droidmate', 'droidmate-2-X.X.X-all.jar')
-        outputDir = './temp'
+        outputDir = os.path.join(WORKING_DIR, 'tools', 'droidmate', './temp')
         
         with open(trace_file, 'wb') as droidmate_trace:
             exec_cmd = Command('java',[
@@ -29,7 +29,7 @@ class ToolSpec(AbstractTool):
             ],timeout=timeout)
             exec_cmd.invoke(stdout=droidmate_trace)
 
-        from shutil import rmtree
-        rmtree(outputDir)
-        rmtree('./out') # logsDir ./out/logs
-        del rmtree
+        #from shutil import rmtree
+        #rmtree(outputDir)
+        #rmtree('./out') # logsDir ./out/logs
+        #del rmtree
