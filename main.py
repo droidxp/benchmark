@@ -63,7 +63,7 @@ if __name__ == '__main__':
             print(" [{0}] {1} \n".format(key, tools[key].description))
         sys.exit("")
         
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
 
