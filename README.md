@@ -43,3 +43,20 @@ Clone the Stoat fork at `https://github.com/rbonifacio/Stoat.git`. It is also ne
 export STOAT_HOME=~/Documents/workspace-droidxp/Stoat/Stoat
 export PATH=$PATH:$STOAT_HOME/bin
 ```
+
+### Sapienz
+
+Clone the Stoat fork at `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied.
+
+   * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev`
+      * Or Mac OS: `brew install coreutils for gtimeout`
+   * Install project Sapienz dependencies by running `sudo pip install -r requirements.txt` at Sapienz root folder.
+   * Android SDK 19+
+
+ It is also necessary to add the project folder in `SAPIENZ_HOME` environment variable. Something like:
+
+```sh
+export SAPIENZ_HOME=~/workspace-droidxp/sapienz/
+```
+
+> **Note:** The environment variable SAPIENZ_HOME needs to end with a '/' character.
