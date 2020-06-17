@@ -36,7 +36,7 @@ class ToolSpec(AbstractTool):
 
             # Exec test generator
             exec_cmd = Command('python', [
-                os.path.join(WORKING_DIR, 'tools', 'sapienz', 'sapienz', 'main.py'),
+                os.environ['SAPIENZ_HOME'] + os.sep + 'main.py',
                 os.path.join(temp_folder, file_name)
             ], timeout)
             exec_cmd.invoke(stdout=trace, stderr=trace)
