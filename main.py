@@ -54,16 +54,15 @@ if __name__ == '__main__':
 
     # End catching arguments
 
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
     if args.list_tools:
-        print("=========================")
-        print("Listing available tools:")
-        print("=========================\n")
+        logging.info(" [Listing available tools] \n")
 
         for key in tools:
             print(" [{0}] {1} \n".format(key, tools[key].description))
         sys.exit("")
         
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
 
