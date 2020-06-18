@@ -101,3 +101,27 @@ export SAPIENZ_HOME=~/workspace-droidxp/sapienz/
 ```
 
 > **Note:** The environment variable SAPIENZ_HOME needs to end with a '/' character.
+
+### Droidmate
+
+To run the benchmark with the droidmate tool, the following dependencies must be satisfied.
+
+   * `Java Development Kit (JDK) 8`
+   * `Android SDK`
+   * `gnuplot` 5.0+
+      * On Mac OS X, must install with `pdf` terminal: `brew install gnuplot --with-cairo`
+   * SDK Manager packages:
+      * Tools / Android SDK Platform-tools 27.0.3
+      * Tools / Android SDK Build-tools
+      * Android 6.0 (API 23) / SDK Platform
+      * Android 7.1 (API 25) / SDK Platform
+      * Extras / Android Support Repository
+      * Extras / Google Play services
+      * Extras / Google USB Driver (if your OS requires it)
+      * Extras / Intel x86 Emulator Accelerator (HAXM Installer) (if you want to use emulator on Windows)
+   * Environment Variables
+      * `JAVA_HOME`
+      * `ANDROID_HOME`
+      * `gnuplot` in `PATH`
+
+More info in the wiki `https://github.com/uds-se/droidmate/wiki/Building#environment`.
