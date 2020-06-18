@@ -44,6 +44,9 @@ class AbstractTool():
 
     def kill_related_processes(self, process_pattern):
         '''Kills all related processes'''
+        if process_pattern is None:
+            return
+        
         get_processes_cmd = Command('adb', [
             'shell',
             'ps',

@@ -296,7 +296,7 @@ class DroidFax:
         logging.info('Starting emulator')
         start = time.time()
         
-        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-scale', '.3'])
+        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
         logging.info('Waiting for emulator to boot')
@@ -342,8 +342,9 @@ class DroidFax:
     @classmethod
     def _uninstall_apk(cls, file):
         package_name = cls._get_package_name(file)
-        uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
-        uninstall_cmd.invoke()
+        if package_name is not None:
+            uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
+            uninstall_cmd.invoke()
 
     @classmethod
     def _get_package_name(cls, file_name):
