@@ -25,6 +25,25 @@ It's assumed that some commands are in your PATH environment variable: `adb`, `j
 To run the benchmark, execute the following command:
 
     python main.py
+    
+## How to run with arguments
+
+The benchmark controll arguments follows:
+
+    usage: python main.py [-h] [--list-tools] [-tools TOOLS [TOOLS ...]] [-t T] [-r R]
+               [-s SAMPLE] 
+
+Here is a sample on how to use the benchmark arguments:
+
+    python main.py -tools monkey droidbot -t 60 -r 3 -s s
+    
+    where:
+    --list-tools list available tools
+    -tools set tools
+    -t as int in seconds
+    -r as int
+    -s in s (small) or l (large)
+    
 
 ## Tool Specific Dependencies
 
