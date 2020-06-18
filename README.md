@@ -28,6 +28,28 @@ To run the benchmark, execute the following command:
 
 ## Tool Specific Dependencies
 
+### Droidbot
+
+To run the benchmark with the droidbot tool, the following dependencies must be satisfied.
+
+   * `Python` (both 2 and 3 are supported)
+   * `Java`
+   * `Android SDK`
+   * Android SDK 18+
+   * Add `platform_tools` directory in Android SDK to `PATH`
+   * (Optional) `OpenCV-Python` if you want to run DroidBot in cv mode.
+
+Clone the droidbot fork at `https://github.com/droidxp/droidbot-stable.git` and install it with pip:
+```shell
+git clone https://github.com/honeynet/droidbot.git
+cd droidbot/
+pip install -e .
+```
+
+If successfully installed, you should be able to execute `droidbot -h`.
+
+More info at the README.md from the fork `https://github.com/droidxp/droidbot-stable`.
+
 ### STOAT
 
 To run the benchmark with the stoat tool, the following dependencies must be satisfied.
