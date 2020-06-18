@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from settings import INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
+from settings import TIMESTAMP, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
 import signal
 import re
@@ -167,14 +167,19 @@ class DroidFax:
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
         # Create a folder to store droid results
-        if os.path.exists(RESULTS_DIR):
-            # Delete previous results
-            logging.info('Removing previous results')
-            shutil.rmtree(RESULTS_DIR)
+        if not os.path.exists(RESULTS_DIR):
+            try:
+                os.mkdir(RESULTS_DIR)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
+                logging.error(error_msg)
+                raise Exception(error_msg)
+
+        # Create a folder to store and specify results by timestamp
         try:
-            os.mkdir(RESULTS_DIR)
+            os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP))
         except OSError:
-            error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
+            error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP))
             logging.error(error_msg)
             raise Exception(error_msg)
 
@@ -182,9 +187,9 @@ class DroidFax:
 
             # Create file results tool folder.
             try:
-                os.mkdir(os.path.join(RESULTS_DIR, tool))
+                os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP, tool))
             except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool))
+                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP, tool))
                 logging.error(error_msg)
                 raise Exception(error_msg)
 
@@ -192,21 +197,21 @@ class DroidFax:
 
                 # Create file results app folder.
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file))
+                    os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file))
                     logging.error(error_msg)
                     raise Exception(error_msg)
             
                 # General Results
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file, 'general_report'))
+                    os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'general_report'))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file, 'general_report'))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'general_report'))
                     logging.error(error_msg)
                     raise Exception(error_msg)
 
-                with open(os.path.join(RESULTS_DIR, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
+                with open(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                     general_report_log.write('Result for {0}'.format(file).encode('ascii'))
                     general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
 
@@ -238,17 +243,17 @@ class DroidFax:
                                 , 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt'
                                 , 'gdistcovIns.txt', 'gfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, tool, file, 'general_report', result_file))
+                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'general_report', result_file))
 
                 # Security Results
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file, 'security_report'))
+                    os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'security_report'))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file, 'security_report'))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'security_report'))
                     logging.error(error_msg)
                     raise Exception(error_msg)
 
-                with open(os.path.join(RESULTS_DIR, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
+                with open(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                     security_report_log.write('Result for {0}'.format(file).encode('ascii'))
                     security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
 
@@ -284,7 +289,7 @@ class DroidFax:
 
                 for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, tool, file, 'security_report', result_file))
+                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'security_report', result_file))
 
     @classmethod
     def _start_emulator(cls):
