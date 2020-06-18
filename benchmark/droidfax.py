@@ -111,11 +111,6 @@ class DroidFax:
     def phase_two_execution(cls, timeout, tool_set, tools):
         logging.info('Droidfax\'s Phase 2: Execution')
 
-        # Verification of the timeout time ratio according to the number of apks in the input folder
-        apks_qnt = len(os.listdir(INSTRUMENTED_DIR))
-        tools_qnt = len(tools)
-        timeout_by_apk = (timeout/apks_qnt)/tools_qnt
-
         # Create a folder to store execution trace
         try:
             if not os.path.exists(TRACE_DIR):
@@ -147,8 +142,8 @@ class DroidFax:
                     logging.info('Executing {0}'.format(file))
                     start = time.time()
 
-                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout_by_apk)))
-                    tool_set[tool].execute(file, timeout_by_apk)
+                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout)))
+                    tool_set[tool].execute(file, timeout)
                     
                     end = time.time()
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
