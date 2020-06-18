@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from settings import TIMESTAMP, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
+from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
 import signal
 import re
@@ -13,7 +13,8 @@ class DroidFax:
     @classmethod
     def run(cls, tool_set, *args):
         # Arg parse
-        path = WORKING_DIR+args[0].path
+        sample = args[0].s
+        path = WORKING_DIR + cls._get_path_from_sample_param(sample)
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
@@ -21,7 +22,10 @@ class DroidFax:
 
         cls.phase_one_instrumentation(path)
         cls.phase_two_execution(timeout, tool_set, tools)
-        cls.phase_three_results(tools)
+        cls.phase_three_results(tools, path)
+
+        # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
+        cls._log_excecution_meta(tools, timeout, '20200618165213', repetitions, 'sample')
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -155,7 +159,7 @@ class DroidFax:
         cls._kill_emulator()
 
     @classmethod
-    def phase_three_results(cls, tools):
+    def phase_three_results(cls, tools, input_path):
         logging.info('Droidfax\'s Phase 3: Results')
 
         # Collect instrumentation dependencies
@@ -193,7 +197,7 @@ class DroidFax:
                 logging.error(error_msg)
                 raise Exception(error_msg)
 
-            for file in os.listdir(INPUT_DIR):
+            for file in os.listdir(input_path):
 
                 # Create file results app folder.
                 try:
@@ -213,7 +217,7 @@ class DroidFax:
 
                 with open(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                     general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+                    general_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     general_report_cmd = Command('java', [
                         '-Xmx4g',
@@ -233,7 +237,7 @@ class DroidFax:
                         '-d',
                         os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file)),
                         '-process-dir',
-                        os.path.join(INPUT_DIR, file),
+                        os.path.join(input_path, file),
                         '-trace',
                         os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
                     ])
@@ -255,7 +259,7 @@ class DroidFax:
 
                 with open(os.path.join(RESULTS_DIR, TIMESTAMP, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                     security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+                    security_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     security_report_cmd = Command('java', [
                         '-Xmx5g',
@@ -281,7 +285,7 @@ class DroidFax:
                         '-catcallback',
                         os.path.join(WORKING_DIR, 'data', 'catCallbacks.txt'),
                         '-process-dir',
-                        os.path.join(INPUT_DIR, file),
+                        os.path.join(input_path, file),
                         '-trace',
                         os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
                     ])
@@ -362,3 +366,25 @@ class DroidFax:
             if match is None:
                 return None
         return match.group(1)
+
+    @classmethod
+    def _get_path_from_sample_param(cls, sample):
+        if (sample == 's'):
+            return '/data/input/small'
+        if (sample == 'l'):
+            return '/data/input/large'
+        else:
+            return '/data/input/small'
+
+    # @classmethod
+    def _log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample):
+        end = time.time()
+        elapsed = end - START
+        with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
+            execution_log.write('############# {0} #############\n\n'.format(TIMESTAMP).encode('ascii'))
+            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2} -s {3}\n'.format(' '.join(tools), timeout, repetitions, sample).encode('ascii'))
+            execution_log.write('It took {0} minutes and {1} seconds to complete this benchmark\n'.format(int(elapsed / 60), elapsed % 60).encode('ascii'))
+            execution_log.write('Tools: {0}\n'.format(' '.join(tools)).encode('ascii'))
+            execution_log.write('Timeout: {0}\n'.format(timeout).encode('ascii'))
+            execution_log.write('Repetitions: {0}\n'.format(repetitions).encode('ascii'))
+            execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))

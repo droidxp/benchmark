@@ -3,6 +3,8 @@ import time
 
 TIMESTAMP = time.strftime("%Y%m%d%H%M%S", time.localtime())
 
+START = time.time()
+
 ANDROID_JAR_PATH = '{0}/Android/Sdk/platforms/android-19/android.jar'.format(os.environ['HOME'])
 
 WORKING_DIR = os.getcwd()
