@@ -1,4 +1,4 @@
-from settings import TEMP_DIR, TRACE_DIR, INSTRUMENTED_DIR, WORKING_DIR
+from settings import TEMP_DIR, INSTRUMENTED_DIR, WORKING_DIR
 import os
 from benchmark.commands.command import Command
 import logging
@@ -13,7 +13,7 @@ class ToolSpec(AbstractTool):
             Android Applications. (https://github.com/Rhapsod/sapienz)""",
                                        None)
         
-    def execute_tool_specific_logic(self, file_name, timeout):
+    def execute_tool_specific_logic(self, TRACE_DIR, file_name, timeout):
 
         # Assure that main temporary folder is created.
         try:
