@@ -3,7 +3,7 @@ import re
 
 from benchmark.commands.command import Command
 
-from settings import INSTRUMENTED_DIR, TRACE_DIR
+from settings import INSTRUMENTED_DIR
 
 from ..tool_spec import AbstractTool
 
@@ -16,7 +16,7 @@ class ToolSpec(AbstractTool):
         by enforcing various user/system interactions. (https://github.com/tingsu/Stoat)""",
                                        'com.android.commands.stoat')
         
-    def execute_tool_specific_logic(self, file_name, timeout):
+    def execute_tool_specific_logic(self, TRACE_DIR, file_name, timeout):
         apk_name = os.path.join(INSTRUMENTED_DIR, file_name)
         print(apk_name)
         trace_file = os.path.join(TRACE_DIR, self.name, file_name + "." + self.name)

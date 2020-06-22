@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # Quantidade de repeticoes para rodar os testes
     parser.add_argument('-r', default=1, help='(-r, -repetitions) Number of repetitions used in the experiment', type=int)
 
-    parser.add_argument('-path', default='/data/input', help='(path) PATH for the target APKs in the experiment')
+    parser.add_argument('-s', default='s', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
 
     args = parser.parse_args()
 

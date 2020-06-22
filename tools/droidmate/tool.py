@@ -3,7 +3,7 @@ import re
 
 from benchmark.commands.command import Command
 
-from settings import INPUT_DIR, TRACE_DIR, WORKING_DIR
+from settings import INPUT_DIR, WORKING_DIR
 
 from ..tool_spec import AbstractTool
 
@@ -12,7 +12,7 @@ class ToolSpec(AbstractTool):
         super(ToolSpec, self).__init__("droidmate", """DroidMate-2 is a platform to easily assist both developers
         and researchers to customize, develop and test new test generators.(https://github.com/uds-se/droidmate).""", 'com.android.commands.droidmate')
 
-    def execute_tool_specific_logic(self, fileName, timeout):
+    def execute_tool_specific_logic(self, TRACE_DIR, fileName, timeout):
         trace_file = os.path.join(TRACE_DIR, self.name, fileName + "." + self.name)
         droidmate_jar = os.path.join(WORKING_DIR, 'tools', 'droidmate', 'droidmate-2-X.X.X-all.jar')
         outputDir = os.path.join(WORKING_DIR, 'tools', 'droidmate', './temp')

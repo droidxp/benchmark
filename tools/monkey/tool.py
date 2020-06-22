@@ -3,7 +3,7 @@ import re
 
 from benchmark.commands.command import Command
 
-from settings import INSTRUMENTED_DIR, TRACE_DIR
+from settings import INSTRUMENTED_DIR
 
 from ..tool_spec import AbstractTool
 
@@ -15,7 +15,7 @@ class ToolSpec(AbstractTool):
         as well as a number of system-level events. (https://developer.android.com/studio/test/monkey)""",
                                        'com.android.commands.monkey')
         
-    def execute_tool_specific_logic(self, file_name, timeout):
+    def execute_tool_specific_logic(self, TRACE_DIR, file_name, timeout):
         package_name = self._get_package_name(os.path.join(INSTRUMENTED_DIR, file_name))
         trace_file = os.path.join(TRACE_DIR, self.name, file_name + "." + self.name)
         with open(trace_file, 'wb') as trace:
