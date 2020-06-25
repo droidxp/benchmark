@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from settings import INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
+from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
 import signal
 import re
@@ -13,15 +13,20 @@ class DroidFax:
     @classmethod
     def run(cls, tool_set, *args):
         # Arg parse
-        path = WORKING_DIR+args[0].path
+        sample = args[0].s
+        path = WORKING_DIR + cls._get_path_from_sample_param(sample)
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
         # End Arg parse
 
         cls.phase_one_instrumentation(path)
-        cls.phase_two_execution(timeout, tool_set, tools)
-        cls.phase_three_results(tools)
+        for repetition in range(repetitions):
+            cls.phase_two_execution(timeout, tool_set, tools, repetition+1)
+            cls.phase_three_results(tools, path, repetition+1)
+
+        # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
+        cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -108,23 +113,23 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls, timeout, tool_set, tools):
-        logging.info('Droidfax\'s Phase 2: Execution')
+    def phase_two_execution(cls, timeout, tool_set, tools, repetition):
+        logging.info('Droidfax\'s Phase 2: Execution - Repetition {0}'.format(repetition).encode('ascii'))
 
-        # Verification of the timeout time ratio according to the number of apks in the input folder
-        apks_qnt = len(os.listdir(INSTRUMENTED_DIR))
-        tools_qnt = len(tools)
-        timeout_by_apk = (timeout/apks_qnt)/tools_qnt
+        # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
+        trace_dir_repetition = os.path.join(TRACE_DIR, str(repetition))
 
         # Create a folder to store execution trace
         try:
             if not os.path.exists(TRACE_DIR):
                 os.mkdir(TRACE_DIR)
+            if not os.path.exists(trace_dir_repetition):
+                os.mkdir(trace_dir_repetition)
             for tool in tools:
-                if not os.path.exists(os.path.join(TRACE_DIR, tool)):
-                    os.mkdir(os.path.join(TRACE_DIR, tool))
-                for file in os.listdir(os.path.join(TRACE_DIR, tool)):
-                    os.remove(os.path.join(TRACE_DIR, tool, file))
+                if not os.path.exists(os.path.join(trace_dir_repetition, tool)):
+                    os.mkdir(os.path.join(trace_dir_repetition, tool))
+                for file in os.listdir(os.path.join(trace_dir_repetition, tool)):
+                    os.remove(os.path.join(trace_dir_repetition, tool, file))
 
         except OSError:
             error_msg = 'Error while creating folder {0}'.format(TRACE_DIR)
@@ -139,7 +144,7 @@ class DroidFax:
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
             
                 logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-                logcat_file = os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
+                logcat_file = os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
 
                 with open(logcat_file, 'wb') as log_cat:
                     proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
@@ -147,8 +152,8 @@ class DroidFax:
                     logging.info('Executing {0}'.format(file))
                     start = time.time()
 
-                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout_by_apk)))
-                    tool_set[tool].execute(file, timeout_by_apk)
+                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout)))
+                    tool_set[tool].execute(trace_dir_repetition, file, timeout)
                     
                     end = time.time()
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
@@ -160,8 +165,12 @@ class DroidFax:
         cls._kill_emulator()
 
     @classmethod
-    def phase_three_results(cls, tools):
-        logging.info('Droidfax\'s Phase 3: Results')
+    def phase_three_results(cls, tools, input_path, repetition):
+        logging.info('Droidfax\'s Phase 3: Results - Repetition {0}'.format(repetition).encode('ascii'))
+
+        # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
+        trace_dir_repetition = os.path.join(TRACE_DIR, str(repetition))
+        result_dir_repetition = os.path.join(RESULTS_DIR, TIMESTAMP, str(repetition))
 
         # Collect instrumentation dependencies
         libs = list(map(lambda dep: os.path.join(LIBS_DIR, dep), os.listdir(LIBS_DIR)))
@@ -172,48 +181,63 @@ class DroidFax:
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
         # Create a folder to store droid results
-        if os.path.exists(RESULTS_DIR):
-            # Delete previous results
-            logging.info('Removing previous results')
-            shutil.rmtree(RESULTS_DIR)
-        try:
-            os.mkdir(RESULTS_DIR)
-        except OSError:
-            error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
-            logging.error(error_msg)
-            raise Exception(error_msg)
+        if not os.path.exists(RESULTS_DIR):
+            try:
+                os.mkdir(RESULTS_DIR)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
+                logging.error(error_msg)
+                raise Exception(error_msg)
+
+        # Create a folder to store and specify results by timestamp
+        if not os.path.exists(os.path.join(RESULTS_DIR, TIMESTAMP)):
+            try:
+                os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP))
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP))
+                logging.error(error_msg)
+                raise Exception(error_msg)
+
+        # Create a folder to store and specify results by repetition
+        if not os.path.exists(result_dir_repetition):
+            try:
+                os.mkdir(result_dir_repetition)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(result_dir_repetition)
+                logging.error(error_msg)
+                raise Exception(error_msg)
 
         for tool in tools:
 
             # Create file results tool folder.
             try:
-                os.mkdir(os.path.join(RESULTS_DIR, tool))
+                os.mkdir(os.path.join(result_dir_repetition, tool))
             except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool))
+                error_msg = 'Error while creating folder {0}'.format(os.path.join(result_dir_repetition, tool))
                 logging.error(error_msg)
                 raise Exception(error_msg)
 
-            for file in os.listdir(INPUT_DIR):
+            for file in os.listdir(input_path):
 
                 # Create file results app folder.
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file))
+                    os.mkdir(os.path.join(result_dir_repetition, tool, file))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(result_dir_repetition, tool, file))
                     logging.error(error_msg)
                     raise Exception(error_msg)
             
                 # General Results
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file, 'general_report'))
+                    os.mkdir(os.path.join(result_dir_repetition, tool, file, 'general_report'))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file, 'general_report'))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(result_dir_repetition, tool, file, 'general_report'))
                     logging.error(error_msg)
                     raise Exception(error_msg)
 
-                with open(os.path.join(RESULTS_DIR, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
+                with open(os.path.join(result_dir_repetition, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                     general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    general_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+                    general_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     general_report_cmd = Command('java', [
                         '-Xmx4g',
@@ -231,11 +255,11 @@ class DroidFax:
                         'cg.spark',
                         'verbose:false,on-fly-cg:true,rta:false',
                         '-d',
-                        os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file)),
+                        os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file)),
                         '-process-dir',
-                        os.path.join(INPUT_DIR, file),
+                        os.path.join(input_path, file),
                         '-trace',
-                        os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
+                        os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
                     ])
                     general_report_cmd.invoke(stdout=general_report_log, stderr=general_report_log)
 
@@ -243,19 +267,19 @@ class DroidFax:
                                 , 'callerrankIns.txt', 'compdist.txt', 'edgefreq.txt', 'gdistcov.txt'
                                 , 'gdistcovIns.txt', 'gfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, tool, file, 'general_report', result_file))
+                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(result_dir_repetition, tool, file, 'general_report', result_file))
 
                 # Security Results
                 try:
-                    os.mkdir(os.path.join(RESULTS_DIR, tool, file, 'security_report'))
+                    os.mkdir(os.path.join(result_dir_repetition, tool, file, 'security_report'))
                 except OSError:
-                    error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, tool, file, 'security_report'))
+                    error_msg = 'Error while creating folder {0}'.format(os.path.join(result_dir_repetition, tool, file, 'security_report'))
                     logging.error(error_msg)
                     raise Exception(error_msg)
 
-                with open(os.path.join(RESULTS_DIR, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
+                with open(os.path.join(result_dir_repetition, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                     security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    security_report_log.write(cls._get_package_name(os.path.join(INPUT_DIR, file)).encode('ascii'))
+                    security_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     security_report_cmd = Command('java', [
                         '-Xmx5g',
@@ -273,7 +297,7 @@ class DroidFax:
                         'cg.spark',
                         'verbose:false,on-fly-cg:true,rta:false',
                         '-d',
-                        os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file)),
+                        os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file)),
                         '-catsrc',
                         os.path.join(WORKING_DIR, 'data', 'catsources.txt.final'),
                         '-catsink',
@@ -281,22 +305,22 @@ class DroidFax:
                         '-catcallback',
                         os.path.join(WORKING_DIR, 'data', 'catCallbacks.txt'),
                         '-process-dir',
-                        os.path.join(INPUT_DIR, file),
+                        os.path.join(input_path, file),
                         '-trace',
-                        os.path.join(TRACE_DIR, tool, "{0}.logcat".format(file))
+                        os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
                     ])
                     security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
 
                 for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
-                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(RESULTS_DIR, tool, file, 'security_report', result_file))
+                        os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(result_dir_repetition, tool, file, 'security_report', result_file))
 
     @classmethod
     def _start_emulator(cls):
         logging.info('Starting emulator')
         start = time.time()
         
-        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-scale', '.3'])
+        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
         logging.info('Waiting for emulator to boot')
@@ -342,8 +366,9 @@ class DroidFax:
     @classmethod
     def _uninstall_apk(cls, file):
         package_name = cls._get_package_name(file)
-        uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
-        uninstall_cmd.invoke()
+        if package_name is not None:
+            uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
+            uninstall_cmd.invoke()
 
     @classmethod
     def _get_package_name(cls, file_name):
@@ -361,3 +386,25 @@ class DroidFax:
             if match is None:
                 return None
         return match.group(1)
+
+    @classmethod
+    def _get_path_from_sample_param(cls, sample):
+        if (sample == 's'):
+            return '/data/input/small'
+        if (sample == 'l'):
+            return '/data/input/large'
+        else:
+            return '/data/input/small'
+
+    # @classmethod
+    def _log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample):
+        end = time.time()
+        elapsed = end - START
+        with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
+            execution_log.write('############# {0} #############\n\n'.format(TIMESTAMP).encode('ascii'))
+            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2} -s {3}\n'.format(' '.join(tools), timeout, repetitions, sample).encode('ascii'))
+            execution_log.write('It took {0} minutes and {1} seconds to complete this benchmark\n'.format(int(elapsed / 60), elapsed % 60).encode('ascii'))
+            execution_log.write('Tools: {0}\n'.format(' '.join(tools)).encode('ascii'))
+            execution_log.write('Timeout: {0}\n'.format(timeout).encode('ascii'))
+            execution_log.write('Repetitions: {0}\n'.format(repetitions).encode('ascii'))
+            execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))

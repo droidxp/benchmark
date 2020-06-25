@@ -61,6 +61,7 @@ class Command:
                 else:
                     (stdout, stderr) = proc.communicate(stdin)
             except TimeoutExpired:
+                logging.info("The command has timeout after {0} seconds".format(self._timeout))
                 proc.kill()
                 (stdout, stderr) = proc.communicate(stdin)
             except OSError:
@@ -70,7 +71,7 @@ class Command:
             try:
                 proc = Popen(cmd_args, stderr=PIPE, stdout=PIPE)
                 if self._timeout is not None:
-                    timer = Timer(self._timeout, lambda p: p.kill(), [proc])
+                    timer = Timer(self._timeout, self.kill_process, [proc])
                     timer.start()
 
                 (stdout, stderr) = proc.communicate(stdin)
@@ -84,6 +85,10 @@ class Command:
         logging.debug('Command (stdout): {0}'.format(stdout))
         logging.debug('Command (stderr): {0}'.format(stderr))
         return CommandResult(code, stdout, stderr)
+
+    def kill_process(self, p):
+        logging.info("The command has timeout after {0} seconds".format(self._timeout))
+        p.kill()
 
     def invoke_as_deamon(self, stdout=PIPE, stderr=PIPE):
         cmd_args = []

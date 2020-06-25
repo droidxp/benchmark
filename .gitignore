@@ -144,3 +144,5 @@ trace/
 results/
 
 *.py~
+
+tmp/
