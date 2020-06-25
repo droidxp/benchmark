@@ -3,7 +3,7 @@ import re
 
 from benchmark.commands.command import Command
 
-from settings import INPUT_DIR, TRACE_DIR, WORKING_DIR
+from settings import INSTRUMENTED_DIR, TRACE_DIR, WORKING_DIR
 
 from ..tool_spec import AbstractTool
 
@@ -22,7 +22,7 @@ class ToolSpec(AbstractTool):
                 '-jar',
                 '{}'.format(droidmate_jar),
                 '--Exploration-apkNames={0}'.format(fileName),
-                '--Exploration-apksDir={0}'.format(INPUT_DIR),
+                '--Exploration-apksDir={0}'.format(INSTRUMENTED_DIR),
                 '--Output-outputDir={0}'.format(outputDir),
             ],timeout=timeout)
             exec_cmd.invoke(stdout=droidmate_trace)
