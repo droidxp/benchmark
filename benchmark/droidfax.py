@@ -18,12 +18,14 @@ class DroidFax:
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
+        output_format = args[0].output.lower()
         # End Arg parse
 
-        cls.phase_one_instrumentation(path)
-        for repetition in range(repetitions):
-            cls.phase_two_execution(timeout, tool_set, tools, repetition+1)
-            cls.phase_three_results(tools, path, repetition+1)
+        # cls.phase_one_instrumentation(path)
+        for time in timeout:
+            for repetition in range(repetitions):
+                cls.phase_two_execution(time, tool_set, tools, repetition+1)
+                cls.phase_three_results(time, tools, path, repetition+1)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
         cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
@@ -117,12 +119,15 @@ class DroidFax:
         logging.info('Droidfax\'s Phase 2: Execution - Repetition {0}'.format(repetition).encode('ascii'))
 
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
-        trace_dir_repetition = os.path.join(TRACE_DIR, str(repetition))
+        trace_dir_timeout = os.path.join(TRACE_DIR, str(timeout))
+        trace_dir_repetition = os.path.join(TRACE_DIR, str(timeout), str(repetition))
 
         # Create a folder to store execution trace
         try:
             if not os.path.exists(TRACE_DIR):
                 os.mkdir(TRACE_DIR)
+            if not os.path.exists(trace_dir_timeout):
+                os.mkdir(trace_dir_timeout)
             if not os.path.exists(trace_dir_repetition):
                 os.mkdir(trace_dir_repetition)
             for tool in tools:
@@ -165,12 +170,13 @@ class DroidFax:
         cls._kill_emulator()
 
     @classmethod
-    def phase_three_results(cls, tools, input_path, repetition):
+    def phase_three_results(cls, time, tools, input_path, repetition):
         logging.info('Droidfax\'s Phase 3: Results - Repetition {0}'.format(repetition).encode('ascii'))
 
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
-        trace_dir_repetition = os.path.join(TRACE_DIR, str(repetition))
-        result_dir_repetition = os.path.join(RESULTS_DIR, TIMESTAMP, str(repetition))
+        trace_dir_repetition = os.path.join(TRACE_DIR, str(time), str(repetition))
+        result_dir_time = os.path.join(RESULTS_DIR, TIMESTAMP, str(time))
+        result_dir_repetition = os.path.join(result_dir_time, str(repetition))
 
         # Collect instrumentation dependencies
         libs = list(map(lambda dep: os.path.join(LIBS_DIR, dep), os.listdir(LIBS_DIR)))
@@ -195,6 +201,15 @@ class DroidFax:
                 os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP))
             except OSError:
                 error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP))
+                logging.error(error_msg)
+                raise Exception(error_msg)
+
+        # Create a folder to store and specify results by the choosen timeout
+        if not os.path.exists(result_dir_time):
+            try:
+                os.mkdir(result_dir_time)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(result_dir_time)
                 logging.error(error_msg)
                 raise Exception(error_msg)
 

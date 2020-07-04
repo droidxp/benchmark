@@ -43,12 +43,14 @@ if __name__ == '__main__':
     parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default=['monkey'])
 
     # Recebe timeout limite para rodar os testes
-    parser.add_argument('-t', default=60, help='(-t -time) Threshold of the execution time in the experiment', type=int)
+    parser.add_argument('-t', nargs='+', default=60, help='(-t -time) Threshold of the execution time in the experiment', type=int)
 
     # Quantidade de repeticoes para rodar os testes
     parser.add_argument('-r', default=1, help='(-r, -repetitions) Number of repetitions used in the experiment', type=int)
 
-    parser.add_argument('-s', default='s', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
+    parser.add_argument('-s', default='s', choices=['s', 'l'], help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
+
+    parser.add_argument('-output', default='PDF', choices=['PDF', 'pdf', 'LATEX', 'latex', 'CSV', 'csv', 'XML', 'xml'], help='(output) OUTPUT FORMAT that will be used to store results')
 
     args = parser.parse_args()
 
