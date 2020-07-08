@@ -295,6 +295,21 @@ class Report:
                     apps[app][COLUMN_TOOLS].add(tool)
         timeout_result[COLUMN_APPS] = list(apps.values())
     
+    #TODO rever 
+    @classmethod
+    def __save_simple_result(cls, result):
+        # cria diretorio do relatorio final, caso nao exista 
+        try:
+            if not os.path.exists(cls.REPORT_DIR):
+                os.mkdir(cls.REPORT_DIR)
+        except OSError:
+            error_msg = 'Error while creating folder {0}'.format(cls.REPORT_DIR)
+            raise Exception(error_msg)
+        # salva o resultado em formato json
+        result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'result.json'))
+        with open(result_file, 'w') as fp:
+            json.dump(result, fp, indent=4)
+            
     @classmethod
     def __generate_coverage_graph(cls, execution_result):
         timeouts = execution_result[COLUMN_TIMEOUTS]
@@ -345,213 +360,11 @@ class Report:
         # fig = plot.get_figure()
         # result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'benchmark_simple_graph.png'))
         # fig.savefig(result_file) 
-    
-    @classmethod
-    def __process_simple_results(cls, results_dir, report_dir):
-        # diretorio onde sera gravado o relatorio
-        cls.REPORT_DIR = report_dir
-        # recupera as ferramentas (nomes dos sub-diretorios de results_dir)
-        tools = cls.__get_tools(results_dir)
-        result = {}
-        
-        # para cada ferramenta
-        for tool in tools:
-            # print(tool)
-            
-            result[tool] = {}    
-            tool_result = {}   
-            tool_result[COLUMN_REPS] = []
-            result[tool] = tool_result
-                 
-            # recupera o diretorio correspondente a ferramenta
-            tool_result_dir = os.path.join(results_dir, tool)
-            # recupera as repeticoes executadas por essa ferramenta            
-            reps = cls.__get_reps(tool_result_dir)
-                        
-            rep_index = 0
-            # para cada repeticao
-            for rep in reps:
-                rep_result = {}
-                rep_result[COLUMN_INDEX] = rep_index
-                rep_result[COLUMN_APPS] = []
-                rep_result[COLUMN_COVERAGE] = .0
-                rep_result[COLUMN_TIMEOUT] = int(rep)  # TODO rever como vai pegar o timeout                   
-                result[tool][COLUMN_REPS].append(rep_result)
-                
-                # recupera o diretorio correspondente a repeticao
-                rep_result_dir = os.path.join(tool_result_dir, rep)
-                # recupera os apps executados nessa repeticao
-                apps = cls.__get_apps(rep_result_dir)
-                
-                rep_coverage_sum = .0
-                apps_amount = len(apps)
-                
-                # para cada aplicativo
-                for app in apps:   
-                    # verifica o par de apps e determina se eh malware                                 
-                    malware = cls.__is_malware(rep_result_dir, app)
-                                        
-                    # recupera dados de cobertura de codigo durante a execucao do teste
-                    (benign_coverage, malign_coverage, average_coverage) = cls.__get_coverage(rep_result_dir, app)
-                    
-                    app_result = {}
-                    app_result[COLUMN_NAME] = cls.__get_simple_name(app[0])
-                    app_result[COLUMN_MALWARE] = malware
-                    app_result[COLUMN_COVERAGE_BENIGN] = benign_coverage
-                    app_result[COLUMN_COVERAGE_MALIGN] = malign_coverage
-                    app_result[COLUMN_COVERAGE] = average_coverage
-                    # inclui o resultado do app no resultado final
-                    result[tool][COLUMN_REPS][rep_index][COLUMN_APPS].append(app_result) 
-                    
-                    rep_coverage_sum = rep_coverage_sum + average_coverage
-                result[tool][COLUMN_REPS][rep_index][COLUMN_COVERAGE] = rep_coverage_sum / apps_amount
-                rep_index = rep_index + 1
-           
-        # realiza o merge dos resultados  
-        cls.__merge_simple_results(result)
-        # print(result)
-        
-        # salva resultado, gera graficos e relatorio final
-        # cls.__save_simple_result(result)
-        cls.__generate_simple_graph(result)        
-        cls.__generate_table(result)  # template jinja
-        # deprecated
-        # cls.__generate_graph2(result)
-        
-        return result
-    
-    # TODO revisar funcionamento ... 
-    @classmethod
-    def __merge_simple_results(cls, result):
-        for tool in result:
-            # print('>>>>>',tool)
-            df = None
-            tool_accuracy = 0
-            tool_coverage = .0
-            for rep in result[tool][COLUMN_REPS]:
-                # print('>>>',rep)
-                df_rep = pd.DataFrame(rep[COLUMN_APPS], columns=[COLUMN_NAME, COLUMN_MALWARE, COLUMN_COVERAGE])
-                malware_amount = df_rep[COLUMN_MALWARE].values.sum()
-                apps_amount = len(rep[COLUMN_APPS])
-                accuracy = (malware_amount * 100) / apps_amount
-                tool_accuracy = tool_accuracy + accuracy
-                tool_coverage = tool_coverage + rep[COLUMN_COVERAGE]
-                rep[COLUMN_ACCURACY] = accuracy
-                if df is None:
-                    df = df_rep
-                else:
-                    if df.equals(df_rep):
-                        pd.merge(df, df_rep, left_on='name', right_on='name')
-                    else:
-                        # TODO: tratar (medias, OR, ...)
-                        print(">>>>>>>>>>>>>>>>>>>>>>>>>> nao eh igual")
-                # print(df_rep)            
-            # print('merged=')        
-            # print(df)
-            result[tool][COLUMN_ACCURACY] = tool_accuracy / len(result[tool][COLUMN_REPS])
-            result[tool][COLUMN_COVERAGE] = tool_coverage / len(result[tool][COLUMN_REPS])
-            df.sort_values(by=[COLUMN_NAME], inplace=True)
-            result[tool][COLUMN_APPS] = df.to_dict('r')
-            
-    @classmethod
-    def __save_simple_result(cls, result):
-        # cria diretorio do relatorio final, caso nao exista 
-        try:
-            if not os.path.exists(cls.REPORT_DIR):
-                os.mkdir(cls.REPORT_DIR)
-        except OSError:
-            error_msg = 'Error while creating folder {0}'.format(cls.REPORT_DIR)
-            raise Exception(error_msg)
-        # salva o resultado em formato json
-        result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'result.json'))
-        with open(result_file, 'w') as fp:
-            json.dump(result, fp, indent=4)
-    
-    @classmethod
-    def __generate_table(cls, result):
-        table = []
-        
-        tools = []
-        tools.append("")
-        for tool in result:
-            tools.append(tool)
-        # table.append(tools)
-        
-        for app in result[list(result.keys())[0]][COLUMN_APPS]:
-            apps = []
-            apps.append(app[COLUMN_NAME])
-            for tool in result:
-                for a in result[tool][COLUMN_APPS]:
-                    if a[COLUMN_NAME] == app[COLUMN_NAME]:
-                        apps.append(a[COLUMN_MALWARE])
-            table.append(apps)
-        
-        accs = []
-        # accs.append("")
-        for tool in result:
-            accs.append(result[tool][COLUMN_ACCURACY])
-        # table.append(accs)
-        
-        file_loader = FileSystemLoader('.')
-        env = Environment(loader=file_loader)        
-        template = env.get_template('report.html')
-        output = template.render(tools=tools, table=table, accs=accs)
-        # print(output)
-        html_file = open(os.path.abspath(os.path.join(cls.REPORT_DIR, 'index.html')), 'w')
-        html_file.write(output)
-        html_file.close()
-        
-    # TODO: rever ... esta errado
-    @classmethod
-    def __generate_graph2(cls, result):
-        table = []
-        
-        tools = []
-        headers = []
-        tools.append("")
-        for tool in result:
-            tools.append(tool)
-            headers.append(tool)
-        # table.append(tools)
-        
-        max_apps = 6
-        cont = 0
-        
-        for app in result[list(result.keys())[0]][COLUMN_APPS]:
-            if cont == max_apps:
-                break
-            else:
-                cont = cont + 1
-            apps = []
-            apps.append(app[COLUMN_NAME])
-            for tool in result:
-                for a in result[tool][COLUMN_APPS]:
-                    if a[COLUMN_NAME] == app[COLUMN_NAME]:
-                        apps.append(result[tool][COLUMN_ACCURACY])
-            table.append(apps)
-                
-        df = pd.DataFrame(table, columns=tools)
-        # print(df)
-        plt.close('all')
-        plot = df.plot(kind='bar', y=headers, alpha=0.75, rot=0)
-        plot.set_xlabel("Apps")
-        plot.set_ylabel("Accuracy")        
-        # plt.show()
-        fig = plot.get_figure()
-        result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'benchmark_apps_graph.png'))
-        fig.savefig(result_file) 
-    
-    # def generate_graph(result):
-    #    d = {}
-    #    apps = []
-    #    for app in result[list(result.keys())[0]][COLUMN_APPS]:
-    #        apps.append(app[COLUMN_NAME])     
-    #    print(apps)
-    #    d[COLUMN_APPS] = apps
-    #    for tool in result:
-    #        d[tool] = []
-    #        for app in tool[COLUMN_APPS]
-       
+   
+   
+   
+   
+   
     @classmethod
     def __get_timeouts(cls, execution_dir):
         """Recupera os timeouts (nomes dos diretórios)"""
@@ -645,11 +458,103 @@ class Report:
         df.columns = [COVERAGE_CLASSES_USR, COVERAGE_CLASSES_3RD, COVERAGE_CLASSES_SDK, COVERAGE_CLASSES_TOTAL, COVERAGE_METHODS_USR, COVERAGE_METHODS_3RD, COVERAGE_METHODS_SDK, COVERAGE_METHODS_TOTAL]
         # retorna a terceira linha, que contem os percentuais
         return df.loc[2]
-
-# BASE_DIR = '/home/pedro/tmp/benchmark/results'
-# results_dir = os.path.join(BASE_DIR, '202006190831')
-# report_dir = os.path.join(BASE_DIR, 'report')   
-# Report.__process_simple_results(results_dir, report_dir)   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+               
+    
+    @classmethod
+    def __generate_table(cls, result):
+        table = []
+        
+        tools = []
+        tools.append("")
+        for tool in result:
+            tools.append(tool)
+        # table.append(tools)
+        
+        for app in result[list(result.keys())[0]][COLUMN_APPS]:
+            apps = []
+            apps.append(app[COLUMN_NAME])
+            for tool in result:
+                for a in result[tool][COLUMN_APPS]:
+                    if a[COLUMN_NAME] == app[COLUMN_NAME]:
+                        apps.append(a[COLUMN_MALWARE])
+            table.append(apps)
+        
+        accs = []
+        # accs.append("")
+        for tool in result:
+            accs.append(result[tool][COLUMN_ACCURACY])
+        # table.append(accs)
+        
+        file_loader = FileSystemLoader('.')
+        env = Environment(loader=file_loader)        
+        template = env.get_template('report.html')
+        output = template.render(tools=tools, table=table, accs=accs)
+        # print(output)
+        html_file = open(os.path.abspath(os.path.join(cls.REPORT_DIR, 'index.html')), 'w')
+        html_file.write(output)
+        html_file.close()
+        
+    # TODO: rever ... esta errado
+    @classmethod
+    def __generate_graph2(cls, result):
+        table = []
+        
+        tools = []
+        headers = []
+        tools.append("")
+        for tool in result:
+            tools.append(tool)
+            headers.append(tool)
+        # table.append(tools)
+        
+        max_apps = 6
+        cont = 0
+        
+        for app in result[list(result.keys())[0]][COLUMN_APPS]:
+            if cont == max_apps:
+                break
+            else:
+                cont = cont + 1
+            apps = []
+            apps.append(app[COLUMN_NAME])
+            for tool in result:
+                for a in result[tool][COLUMN_APPS]:
+                    if a[COLUMN_NAME] == app[COLUMN_NAME]:
+                        apps.append(result[tool][COLUMN_ACCURACY])
+            table.append(apps)
+                
+        df = pd.DataFrame(table, columns=tools)
+        # print(df)
+        plt.close('all')
+        plot = df.plot(kind='bar', y=headers, alpha=0.75, rot=0)
+        plot.set_xlabel("Apps")
+        plot.set_ylabel("Accuracy")        
+        # plt.show()
+        fig = plot.get_figure()
+        result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'benchmark_apps_graph.png'))
+        fig.savefig(result_file) 
+ 
+       
+    
 
     
 # BASE_DIR = '/home/pedro/tmp/benchmark'
