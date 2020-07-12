@@ -21,7 +21,7 @@ class DroidFax:
         output_format = args[0].output.lower()
         # End Arg parse
 
-        # cls.phase_one_instrumentation(path)
+        cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
                 cls.phase_two_execution(time, tool_set, tools, repetition+1)
@@ -411,8 +411,8 @@ class DroidFax:
         else:
             return '/data/input/small'
 
-    # @classmethod
-    def _log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample):
+    @classmethod
+    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions, sample):
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
