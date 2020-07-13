@@ -7,6 +7,7 @@ from .commands.command import Command
 import signal
 import re
 import shutil
+import utils
 
 class DroidFax:
 
@@ -24,8 +25,8 @@ class DroidFax:
         cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
-                cls.phase_two_execution(time, tool_set, tools, repetition+1)
-                cls.phase_three_results(time, tools, path, repetition+1)
+                cls.phase_two_execution(time, tool_set, tools, repetition)
+                cls.phase_three_results(time, tools, path, repetition)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
         cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
@@ -252,7 +253,7 @@ class DroidFax:
 
                 with open(os.path.join(result_dir_repetition, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                     general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    general_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
+                    general_report_log.write(utils.get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     general_report_cmd = Command('java', [
                         '-Xmx4g',
@@ -294,7 +295,7 @@ class DroidFax:
 
                 with open(os.path.join(result_dir_repetition, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                     security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    security_report_log.write(cls._get_package_name(os.path.join(input_path, file)).encode('ascii'))
+                    security_report_log.write(utils.get_package_name(os.path.join(input_path, file)).encode('ascii'))
 
                     security_report_cmd = Command('java', [
                         '-Xmx5g',
@@ -380,27 +381,10 @@ class DroidFax:
 
     @classmethod
     def _uninstall_apk(cls, file):
-        package_name = cls._get_package_name(file)
+        package_name = utils.get_package_name(file)
         if package_name is not None:
             uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
             uninstall_cmd.invoke()
-
-    @classmethod
-    def _get_package_name(cls, file_name):
-        readlink_cmd = Command('readlink', ['-f', file_name])
-        readlink_result = readlink_cmd.invoke()
-        readlink_result_str = readlink_result.stdout.strip().decode('ascii')
-        
-        get_package_list_cmd = Command('aapt', ['list', '-a', file_name])
-        get_package_list_result = get_package_list_cmd.invoke()
-        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
-
-        match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
-        if match is None:
-            match = re.search(r'package=(.*)', get_package_list_result_str, re.MULTILINE)
-            if match is None:
-                return None
-        return match.group(1)
 
     @classmethod
     def _get_path_from_sample_param(cls, sample):

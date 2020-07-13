@@ -70,7 +70,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', default='s', choices=['s', 'l'], help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
 
     # Lists available output formats
-    parser.add_argument('--list-output-formats', help="List available output formats", action="store_true")
+    parser.add_argument('--list-outputs', help="List available output formats", action="store_true")
 
     # Sets the output format
     parser.add_argument('--output', default='basic', help='OUTPUT FORMAT that will be used to show results (default: basic)')
@@ -88,7 +88,7 @@ if __name__ == '__main__':
             print(" [{0}] {1} \n".format(key, tools[key].description))
         sys.exit("")
 
-    if args.list_output_formats:
+    if args.list_outputs:
         logging.info(" [Listing available output formats] \n")
 
         for key in output_formats:
@@ -99,10 +99,7 @@ if __name__ == '__main__':
     logging.info('############# STARTING BENCHMARK #############')
 
     DroidFax.run(tools, args)
-
-    logging.info('############# GENERATING REPORT #############')
-
-    # Report.process_results(TIMESTAMP)
+    output_formats[args.output].process(TIMESTAMP, args.t, args.r, args.tools, args.s)
 
     end = time.time()
     elapsed = end - start
