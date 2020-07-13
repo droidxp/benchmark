@@ -21,7 +21,7 @@ class DroidFax:
         output_format = args[0].output.lower()
         # End Arg parse
 
-        # cls.phase_one_instrumentation(path)
+        cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
                 cls.phase_two_execution(time, tool_set, tools, repetition+1)
@@ -164,8 +164,8 @@ class DroidFax:
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
-            logging.info('Uninstalling {0}'.format(file))
-            cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+                logging.info('Uninstalling {0}'.format(file))
+                cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         cls._kill_emulator()
 
@@ -411,7 +411,7 @@ class DroidFax:
         else:
             return '/data/input/small'
 
-    # @classmethod
+    @classmethod
     def _log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample):
         end = time.time()
         elapsed = end - START
