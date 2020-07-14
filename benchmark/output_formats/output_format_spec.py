@@ -16,14 +16,15 @@ COLUMN_TIMEOUTS = 'timeouts'
 COLUMN_NAME = 'name'
 COLUMN_MALWARE = 'malware'
 COLUMN_COVERAGE = 'coverage'
-COLUMN_COVERAGE_BENIGN = 'coverage_benign'  
-COLUMN_COVERAGE_MALIGN = 'coverage_malign'  
+COLUMN_COVERAGE_BENIGN = 'coverage_benign'
+COLUMN_COVERAGE_MALIGN = 'coverage_malign'
+COLUMN_APPS = 'apps'
 
-COVERAGE_CLASSES_USR = 'qt_classes_usr'    
+COVERAGE_CLASSES_USR = 'qt_classes_usr'
 COVERAGE_CLASSES_3RD = 'qt_classes_3rd'
 COVERAGE_CLASSES_SDK = 'qt_classes_sdk'
 COVERAGE_CLASSES_TOTAL = 'qt_classes_total'
-COVERAGE_METHODS_USR = 'qt_methodS_usr'    
+COVERAGE_METHODS_USR = 'qt_methodS_usr'
 COVERAGE_METHODS_3RD = 'qt_methodS_3rd'
 COVERAGE_METHODS_SDK = 'qt_methodS_sdk'
 COVERAGE_METHODS_TOTAL = 'qt_methodS_total'
@@ -42,7 +43,6 @@ COLUMN_TOOL = 'tool'
 COLUMN_TOOLS = 'tools'
 COLUMN_REPS = 'reps'
 COLUMN_INDEX = 'index'
-COLUMN_APPS = 'apps'    
 COLUMN_TIMEOUT = 'timeout'
 COLUMN_ACCURACY = 'accuracy'
 
@@ -85,35 +85,101 @@ class AbstractOutputFormat():
     def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools, sample_size):
         # Initialize results
         results = {}
-        results[COLUMN_TIMEOUTS] = {}
 
         # Iterate timeouts
         for timeout_num in timeouts:
             timeout = str(timeout_num)
-            timeout_results = {}
+            repetition_results = []
             # Iterate repetitions
             for rep_num in range(repetitions):
                 rep = str(rep_num)
-                rep_results = {}
-                # Iterate tools
-                for tool in tools:
-                    tool_results = {}
-                    # Iterate apps (effectively executed)
-                    tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep), tool)
-                    for app in self._get_app_versions(tool_result_dir, sample_size):
-                        app_result = self._process_result(app)
-                        tool_results[app['name']] = app_result
-                    rep_results[tool] = tool_results
-                timeout_results[rep] = rep_results
-            results[COLUMN_TIMEOUTS][timeout] = timeout_results
+                repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools, sample_size))
+            results[timeout] = self._merge_repetitions(execution_ts, timeout, tools, sample_size, repetition_results)
 
         return results
 
-    def _process_result(self, app):
+    def _merge_repetitions(self, execution_ts, timeout, tools, sample_size, repetition_results):
+        """Merge the results from all repetitions, computing the average
+        time of the executions."""
+        merge_result = {}
+
+        # Initialize values
+        for rep, result in enumerate(repetition_results):
+            for tool in tools:
+                merge_result[tool] = {}
+                merge_result[tool][COLUMN_MALWARE] = .0
+                merge_result[tool][COLUMN_COVERAGE] = .0
+                merge_result[tool][COLUMN_ACCURACY] = .0
+                merge_result[tool][COLUMN_APPS] = {}
+
+                # Getting apps which were effectively executed
+                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep), tool)
+                apps = self._get_app_versions(tool_result_dir, sample_size)
+                for app_name in apps:
+                    merge_result[tool][COLUMN_APPS][app_name] = {}
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_NAME] = result[tool][COLUMN_APPS][app_name][COLUMN_NAME]
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_MALWARE] = .0
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_BENIGN] = .0
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_MALIGN] = .0
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE] = .0
+
+
+        # Compute repetitions average
+        for rep, result in enumerate(repetition_results):
+            for tool in tools:
+                # Getting apps which were effectively executed
+                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep), tool)
+                apps = self._get_app_versions(tool_result_dir, sample_size)
+                for app_name in apps:
+                    # Compute average of the repetitions of each app execution
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_MALWARE] += result[tool][COLUMN_APPS][app_name][COLUMN_MALWARE] / len(repetition_results)
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_BENIGN] += result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_BENIGN] / len(repetition_results)
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_MALIGN] += result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE_MALIGN] / len(repetition_results)
+                    merge_result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE] += result[tool][COLUMN_APPS][app_name][COLUMN_COVERAGE] / len(repetition_results)
+
+                # Compute average of the repetitions of each tool execution
+                merge_result[tool][COLUMN_MALWARE] += result[tool][COLUMN_MALWARE] / len(repetition_results)
+                merge_result[tool][COLUMN_COVERAGE] += result[tool][COLUMN_COVERAGE] / len(repetition_results)
+                merge_result[tool][COLUMN_ACCURACY] += result[tool][COLUMN_ACCURACY] / len(repetition_results)
+        return merge_result
+
+    def _process_repetition(self, execution_ts, timeout, repetition, tools, sample_size):
+        """Process the executions of each repetition."""
+        rep_results = {}
+        # Iterate tools
+        for tool in tools:
+            rep_results[tool] = self._process_tool(execution_ts, timeout, repetition, tool, sample_size)
+        return rep_results
+
+    def _process_tool(self, execution_ts, timeout, rep, tool, sample_size):
+        """Process the executions of each tool."""
+        tool_results = {}
+        tool_results[COLUMN_APPS] = {}
+        coverage_sum = .0
+        accurage_sum = .0
+
+        # Iterate apps (effectively executed)
+        tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, rep, tool)
+        apps = self._get_app_versions(tool_result_dir, sample_size)
+        for app_name in apps:
+            app_result = self._process_app(app_name, apps[app_name])
+            coverage_sum += app_result[COLUMN_COVERAGE]
+            if app_result[COLUMN_MALWARE]:
+                accurage_sum += 1
+            tool_results[COLUMN_APPS][app_name] = app_result
+
+        # Compute average results per tool
+        tool_results[COLUMN_MALWARE] = accurage_sum
+        tool_results[COLUMN_COVERAGE] = coverage_sum / len(tool_results[COLUMN_APPS])
+        tool_results[COLUMN_ACCURACY] = accurage_sum / len(tool_results[COLUMN_APPS])
+        return tool_results
+
+    def _process_app(self, app_name, app):
+        """Process the results from the execution of each app."""
         result = {}
         malware = self._process_malware_detection(app['benign'], app['malign'])
         benign_coverage, malign_coverage, average_coverage = self._process_coverage(app['benign'], app['malign'])
-        result[COLUMN_NAME] = app['name']
+        result[COLUMN_NAME] = app_name
         result[COLUMN_MALWARE] = malware
         result[COLUMN_COVERAGE_BENIGN] = benign_coverage
         result[COLUMN_COVERAGE_MALIGN] = malign_coverage
@@ -180,9 +246,9 @@ class AbstractOutputFormat():
             input_dir = utils.get_input_path_from_sample(sample_size)
             simple_name = utils.get_package_name(os.path.join(input_dir, executed_apk))
             if not simple_name in apps:
-                apps[simple_name] = { 'name': simple_name }
+                apps[simple_name] = {}
             if executed_apk.startswith(PREFIX_BENIGN):
                 apps[simple_name]['benign'] = os.path.join(tool_result_dir, executed_apk)
             else:
                 apps[simple_name]['malign'] = os.path.join(tool_result_dir, executed_apk)
-        return list(apps.values())
+        return apps
