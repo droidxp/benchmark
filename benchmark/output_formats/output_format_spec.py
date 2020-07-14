@@ -6,6 +6,9 @@ import logging
 import pandas as pd
 import utils
 
+PREFIX_BENIGN = 'B'
+PREFIX_MALIGN = 'M'
+
 SECURITY_REPORT_DIR = 'security_report'
 SECURITY_REPORT_FILE = 'src.txt'
 
@@ -19,6 +22,7 @@ COLUMN_COVERAGE = 'coverage'
 COLUMN_COVERAGE_BENIGN = 'coverage_benign'
 COLUMN_COVERAGE_MALIGN = 'coverage_malign'
 COLUMN_APPS = 'apps'
+COLUMN_ACCURACY = 'accuracy'
 
 COVERAGE_CLASSES_USR = 'qt_classes_usr'
 COVERAGE_CLASSES_3RD = 'qt_classes_3rd'
@@ -28,23 +32,6 @@ COVERAGE_METHODS_USR = 'qt_methodS_usr'
 COVERAGE_METHODS_3RD = 'qt_methodS_3rd'
 COVERAGE_METHODS_SDK = 'qt_methodS_sdk'
 COVERAGE_METHODS_TOTAL = 'qt_methodS_total'
-
-#--------------
-PREFIX_BENIGN = 'B'
-PREFIX_MALIGN = 'M'
-
-
-
-
-
-COLUMN_EXECUTION = 'execution'
-COLUMN_EXECUTION_DIR = 'dir'
-COLUMN_TOOL = 'tool'
-COLUMN_TOOLS = 'tools'
-COLUMN_REPS = 'reps'
-COLUMN_INDEX = 'index'
-COLUMN_TIMEOUT = 'timeout'
-COLUMN_ACCURACY = 'accuracy'
 
 class AbstractOutputFormat():
     __metaclass__ = ABCMeta
