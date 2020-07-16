@@ -14,16 +14,17 @@ class DroidFax:
     def run(cls, tool_set, *args):
         # Arg parse
         sample = args[0].s
-        path = WORKING_DIR + cls._get_path_from_sample_param(sample)
+        path = WORKING_DIR + sample
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
         output_format = args[0].output.lower()
         # End Arg parse
 
-        # cls.phase_one_instrumentation(path)
+        cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
+                
                 cls.phase_two_execution(time, tool_set, tools, repetition+1)
                 cls.phase_three_results(time, tools, path, repetition+1)
 
@@ -402,17 +403,17 @@ class DroidFax:
                 return None
         return match.group(1)
 
-    @classmethod
-    def _get_path_from_sample_param(cls, sample):
-        if (sample == 's'):
-            return '/data/input/small'
-        if (sample == 'l'):
-            return '/data/input/large'
-        else:
-            return '/data/input/small'
+    # @classmethod
+    # def _get_path_from_sample_param(cls, sample):
+    #     if (sample == 's'):
+    #         return '/data/input/small'
+    #     if (sample == 'l'):
+    #         return '/data/input/large'
+    #     else:
+    #         return '/data/input/small'
 
     # @classmethod
-    def _log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample):
+    def _log_excecution_meta(self, tools, timeout, TIMESTAMP, repetitions, sample):
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:

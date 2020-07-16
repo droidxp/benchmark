@@ -39,17 +39,20 @@ if __name__ == '__main__':
     # list available tools 
     parser.add_argument("--list-tools", help="list available tools", action="store_true")
     
-    # Recebe lista de ferramentas de testes
+    # List of test tools used in the experiment
     parser.add_argument('-tools', nargs='+', help='List of test tools used in the experiment', default=['monkey'])
 
-    # Recebe timeout limite para rodar os testes
+    # Threshold of the execution time in the experiment
     parser.add_argument('-t', nargs='+', default=[60], help='(-t -time) Threshold of the execution time in the experiment', type=int)
 
-    # Quantidade de repeticoes para rodar os testes
+    # Number of repetitions used in the experiment
     parser.add_argument('-r', default=1, help='(-r, -repetitions) Number of repetitions used in the experiment', type=int)
 
-    parser.add_argument('-s', default='s', choices=['s', 'l'], help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
+    # Path with the APKs used in the experiment
+    parser.add_argument('-s', default='/data/input/small', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
+    # choices=['s', 'l'],
 
+    # Output format
     parser.add_argument('-output', default='PDF', choices=['PDF', 'pdf', 'LATEX', 'latex', 'CSV', 'csv', 'XML', 'xml'], help='(output) OUTPUT FORMAT that will be used to store results')
 
     args = parser.parse_args()
