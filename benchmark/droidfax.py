@@ -412,13 +412,8 @@ class DroidFax:
     #     else:
     #         return '/data/input/small'
 
-<<<<<<< HEAD
-    # @classmethod
-    def _log_excecution_meta(self, tools, timeout, TIMESTAMP, repetitions, sample):
-=======
     @classmethod
     def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions, sample):
->>>>>>> 0ba87b64fe0f7eac78189a6a0cc3d3b6594a79c8
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
