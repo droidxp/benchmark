@@ -143,8 +143,10 @@ class DroidFax:
 
         cls._start_emulator()
 
+        input_files = [filename for filename in os.listdir(INPUT_DIR) if filename.endswith('.apk')]
+        instrumented_apks = [app for app in os.listdir(INSTRUMENTED_DIR) if app in input_files]        
         for tool in tools:
-            for file in os.listdir(INSTRUMENTED_DIR):
+            for file in instrumented_apks:
                 logging.info('Installing {0}'.format(file))
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
             
