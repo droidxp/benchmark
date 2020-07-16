@@ -24,7 +24,6 @@ class DroidFax:
         cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
-                
                 cls.phase_two_execution(time, tool_set, tools, repetition+1)
                 cls.phase_three_results(time, tools, path, repetition+1)
 
@@ -165,8 +164,8 @@ class DroidFax:
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
-            logging.info('Uninstalling {0}'.format(file))
-            cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+                logging.info('Uninstalling {0}'.format(file))
+                cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         cls._kill_emulator()
 
@@ -335,7 +334,8 @@ class DroidFax:
     def _start_emulator(cls):
         logging.info('Starting emulator')
         start = time.time()
-        
+                
+        #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-no-window', '-netdelay', 'none'])
         start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
@@ -412,8 +412,13 @@ class DroidFax:
     #     else:
     #         return '/data/input/small'
 
+<<<<<<< HEAD
     # @classmethod
     def _log_excecution_meta(self, tools, timeout, TIMESTAMP, repetitions, sample):
+=======
+    @classmethod
+    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions, sample):
+>>>>>>> 0ba87b64fe0f7eac78189a6a0cc3d3b6594a79c8
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
