@@ -13,15 +13,15 @@ class DroidFax:
     @classmethod
     def run(cls, tool_set, *args):
         # Arg parse
-        sample = args[0].s
-        path = WORKING_DIR + sample
+        # sample = args[0].s
+        # path = WORKING_DIR + sample
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
         output_format = args[0].output.lower()
         # End Arg parse
 
-        cls.phase_one_instrumentation(path)
+        cls.phase_one_instrumentation(INPUT_DIR)
         for time in timeout:
             for repetition in range(repetitions):
                 cls.phase_two_execution(time, tool_set, tools, repetition+1)
@@ -51,7 +51,7 @@ class DroidFax:
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
-        for file in os.listdir(input_path):
+        for file in [app for app in os.listdir(input_path) if app.endswith('.apk')]:
 
             # Verify if apk is already instrumented.
             if os.path.exists(os.path.join(INSTRUMENTED_DIR, file)):

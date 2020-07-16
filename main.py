@@ -49,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument('-r', default=1, help='(-r, -repetitions) Number of repetitions used in the experiment', type=int)
 
     # Path with the APKs used in the experiment
-    parser.add_argument('-s', default='/data/input/small', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
+    # parser.add_argument('-s', default='/data/input/small', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
     # choices=['s', 'l'],
 
     # Output format
