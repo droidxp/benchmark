@@ -23,12 +23,12 @@ class DroidFax:
 
         cls.phase_one_instrumentation(INPUT_DIR)
         for time in timeout:
-            for repetition in range(repetitions):
-                cls.phase_two_execution(time, tool_set, tools, repetition+1)
-                cls.phase_three_results(time, tools, path, repetition+1)
+           for repetition in range(repetitions):
+               cls.phase_two_execution(time, tool_set, tools, repetition+1)
+               cls.phase_three_results(time, tools, INPUT_DIR, repetition+1)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
-        cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
+        cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions)
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -234,7 +234,7 @@ class DroidFax:
                 logging.error(error_msg)
                 raise Exception(error_msg)
 
-            for file in os.listdir(input_path):
+            for file in [app for app in os.listdir(input_path) if app.endswith('.apk')]:
 
                 # Create file results app folder.
                 try:
@@ -415,14 +415,14 @@ class DroidFax:
     #         return '/data/input/small'
 
     @classmethod
-    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions, sample):
+    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions):
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
             execution_log.write('############# {0} #############\n\n'.format(TIMESTAMP).encode('ascii'))
-            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2} -s {3}\n'.format(' '.join(tools), timeout, repetitions, sample).encode('ascii'))
+            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2}\n'.format(' '.join(tools), timeout, repetitions).encode('ascii'))
             execution_log.write('It took {0} minutes and {1} seconds to complete this benchmark\n'.format(int(elapsed / 60), elapsed % 60).encode('ascii'))
             execution_log.write('Tools: {0}\n'.format(' '.join(tools)).encode('ascii'))
             execution_log.write('Timeout: {0}\n'.format(timeout).encode('ascii'))
             execution_log.write('Repetitions: {0}\n'.format(repetitions).encode('ascii'))
-            execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))
+            # execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))
