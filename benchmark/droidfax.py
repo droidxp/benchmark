@@ -174,7 +174,7 @@ class DroidFax:
     @classmethod
     def phase_three_results(cls, time, tools, input_path, repetition):
         logging.info('Droidfax\'s Phase 3: Results - Repetition {0}'.format(repetition).encode('ascii'))
-
+        # TODO: var time in the same file as `import time`
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
         trace_dir_repetition = os.path.join(TRACE_DIR, str(time), str(repetition))
         result_dir_time = os.path.join(RESULTS_DIR, TIMESTAMP, str(time))
