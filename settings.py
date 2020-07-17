@@ -13,7 +13,6 @@ INPUT_DIR = os.path.join(WORKING_DIR, 'data', 'input')
 INSTRUMENTED_DIR = os.path.join(WORKING_DIR, 'data', 'instrumented')
 TRACE_DIR = os.path.join(WORKING_DIR, 'trace')
 RESULTS_DIR = os.path.join(WORKING_DIR, 'results')
-REPORT_DIR = os.path.join(WORKING_DIR, 'report')
 TEMP_DIR = os.path.join(WORKING_DIR, 'tmp')
 
 KEYSTORE_PATH = os.path.join(WORKING_DIR, 'data', 'keystores', 'droidfax.jks')

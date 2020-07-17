@@ -25,8 +25,8 @@ class DroidFax:
         cls.phase_one_instrumentation(path)
         for time in timeout:
             for repetition in range(repetitions):
-                cls.phase_two_execution(time, tool_set, tools, repetition)
-                cls.phase_three_results(time, tools, path, repetition)
+                cls.phase_two_execution(time, tool_set, tools, repetition + 1)
+                cls.phase_three_results(time, tools, path, repetition + 1)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
         cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
