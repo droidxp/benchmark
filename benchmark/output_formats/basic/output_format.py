@@ -59,8 +59,9 @@ class OutputFormatSpec(AbstractOutputFormat):
         # plt.show()
 
     def _generate_accuracy_graph_bar(self, report_dir, results):
-        accuracy_data = []
+        
         for timeout in results:
+            accuracy_data = []
             for tool in results[timeout]:
                 dictionary = {}
                 dictionary[constants.COLUMN_TOOL] = tool

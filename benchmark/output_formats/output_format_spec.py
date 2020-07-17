@@ -54,8 +54,8 @@ class AbstractOutputFormat():
             timeout = str(timeout_num)
             repetition_results = []
             # Iterate repetitions
-            for rep_num in range(repetitions + 1):
-                rep = str(rep_num)
+            for rep_num in range(repetitions):
+                rep = str(rep_num + 1)
                 repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools, sample_size))
             results[timeout] = self._merge_repetitions(execution_ts, timeout, tools, sample_size, repetition_results)
 
@@ -76,7 +76,7 @@ class AbstractOutputFormat():
                 merge_result[tool][constants.COLUMN_APPS] = {}
 
                 # Getting apps which were effectively executed
-                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep), tool)
+                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
                 apps = self._get_app_versions(tool_result_dir, sample_size)
                 for app_name in apps:
                     merge_result[tool][constants.COLUMN_APPS][app_name] = {}
@@ -91,7 +91,7 @@ class AbstractOutputFormat():
         for rep, result in enumerate(repetition_results):
             for tool in tools:
                 # Getting apps which were effectively executed
-                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep), tool)
+                tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
                 apps = self._get_app_versions(tool_result_dir, sample_size)
                 for app_name in apps:
                     # Compute average of the repetitions of each app execution
