@@ -198,7 +198,7 @@ class AbstractOutputFormat():
         df.columns = [
             constants.COVERAGE_CLASSES_USR, 
             constants.COVERAGE_CLASSES_3RD,
-            constants. COVERAGE_CLASSES_SDK, 
+            constants.COVERAGE_CLASSES_SDK, 
             constants.COVERAGE_CLASSES_TOTAL, 
             constants.COVERAGE_METHODS_USR, 
             constants.COVERAGE_METHODS_3RD, 
