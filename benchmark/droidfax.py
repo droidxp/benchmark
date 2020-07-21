@@ -149,7 +149,7 @@ class DroidFax:
             for file in instrumented_apks:
                 logging.info('Installing {0}'.format(file))
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
-            
+                # TODO: logcat doc to add timestamps to logcat
                 logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
                 logcat_file = os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
 
