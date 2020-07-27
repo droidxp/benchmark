@@ -141,12 +141,15 @@ class DroidFax:
             logging.error(error_msg)
             raise Exception(error_msg)
 
-        cls._start_emulator()
+        #cls._start_emulator()
 
         input_files = [filename for filename in os.listdir(INPUT_DIR) if filename.endswith('.apk')]
         instrumented_apks = [app for app in os.listdir(INSTRUMENTED_DIR) if app in input_files]        
         for tool in tools:
             for file in instrumented_apks:
+            
+                cls._start_emulator()
+                
                 logging.info('Installing {0}'.format(file))
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
             
@@ -167,7 +170,8 @@ class DroidFax:
                     proc.kill()
 
                 logging.info('Uninstalling {0}'.format(file))
-                cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+                cls._kill_emulator()
+                #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         cls._kill_emulator()
 
