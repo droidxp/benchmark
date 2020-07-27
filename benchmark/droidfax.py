@@ -23,7 +23,7 @@ class DroidFax:
 
         cls.phase_one_instrumentation(INPUT_DIR)
         for time in timeout:
-           for repetition in range(repetitions):
+            for repetition in range(repetitions):
                cls.phase_two_execution(time, tool_set, tools, repetition+1)
                cls.phase_three_results(time, tools, INPUT_DIR, repetition+1)
 
