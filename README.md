@@ -35,14 +35,13 @@ The benchmark controll arguments follows:
 
 Here is a sample on how to use the benchmark arguments:
 
-    python main.py -tools monkey droidbot -t 60 -r 3 -s s
+    python main.py -tools monkey droidbot -t 60 -r 3
     
     where:
     --list-tools list available tools
     -tools set tools
     -t as int in seconds
     -r as int
-    -s in s (small) or l (large)
     
 
 ## Tool Specific Dependencies

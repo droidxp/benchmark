@@ -141,12 +141,15 @@ class DroidFax:
             logging.error(error_msg)
             raise Exception(error_msg)
 
-        cls._start_emulator()
+        #cls._start_emulator()
 
         input_files = [filename for filename in os.listdir(INPUT_DIR) if filename.endswith('.apk')]
         instrumented_apks = [app for app in os.listdir(INSTRUMENTED_DIR) if app in input_files]        
         for tool in tools:
             for file in instrumented_apks:
+            
+                cls._start_emulator()
+                
                 logging.info('Installing {0}'.format(file))
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
                 # TODO: logcat doc to add timestamps to logcat
@@ -167,7 +170,8 @@ class DroidFax:
                     proc.kill()
 
                 logging.info('Uninstalling {0}'.format(file))
-                cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+                cls._kill_emulator()
+                #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         cls._kill_emulator()
 
@@ -187,43 +191,19 @@ class DroidFax:
         # Collect soot dependencies
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
-
+        
         # Create a folder to store droid results
-        if not os.path.exists(RESULTS_DIR):
-            try:
-                os.mkdir(RESULTS_DIR)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(RESULTS_DIR)
+        
         # Create a folder to store and specify results by timestamp
-        if not os.path.exists(os.path.join(RESULTS_DIR, TIMESTAMP)):
-            try:
-                os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP))
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP))
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(os.path.join(RESULTS_DIR, TIMESTAMP))
+        
         # Create a folder to store and specify results by the choosen timeout
-        if not os.path.exists(result_dir_time):
-            try:
-                os.mkdir(result_dir_time)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(result_dir_time)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(result_dir_time)
+        
         # Create a folder to store and specify results by repetition
-        if not os.path.exists(result_dir_repetition):
-            try:
-                os.mkdir(result_dir_repetition)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(result_dir_repetition)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(result_dir_repetition)
+        
         for tool in tools:
 
             # Create file results tool folder.
@@ -413,6 +393,15 @@ class DroidFax:
     #         return '/data/input/large'
     #     else:
     #         return '/data/input/small'
+    @classmethod
+    def _create_folder(cls,folder_name):
+        if not os.path.exists(folder_name):
+            try:
+                os.mkdir(folder_name)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(folder_name)
+                logging.error(error_msg)
+                raise Exception(error_msg)
 
     @classmethod
     def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions):
