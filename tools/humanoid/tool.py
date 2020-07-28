@@ -17,9 +17,9 @@ class ToolSpec(AbstractTool):
         Currently Humanoid works with DroidBot. When DroidBot explores an Android app in model-based policy, 
         it will generate several possible input events according to current UI state. 
         Humanoid than sort the events such that events that will be performed by human most likely will be fired first.
-        (https://github.com/yzygitzh/Humanoid)""", 'com.android.commands.droidbot')
+        (https://github.com/yzygitzh/Humanoid)""", 'com.android.commands.humanoid')
         
-    def execute_tool_specific_logic(self, file_name, timeout):
+    def execute_tool_specific_logic(self, TRACE_DIR, file_name, timeout):
         package_name = os.path.join('data', 'instrumented', file_name)
         trace_file = os.path.join(TRACE_DIR, self.name, file_name + "." + self.name)
         with open(trace_file, 'wb') as trace:
