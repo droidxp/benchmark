@@ -343,6 +343,7 @@ class DroidFax:
         kill_emulator_cmd.invoke()
         kill_server_cmd = Command('adb', ['-s', 'emulator-5554', 'kill-server'])
         kill_server_cmd.invoke()
+        time.sleep(10)
 
     @staticmethod
     def _install_apk(file):
