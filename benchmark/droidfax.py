@@ -343,6 +343,8 @@ class DroidFax:
         kill_emulator_cmd.invoke()
         kill_server_cmd = Command('adb', ['-s', 'emulator-5554', 'kill-server'])
         kill_server_cmd.invoke()
+        kill_locks_cmd = Command('rm', ['~/.android/avd/{}.avd/*.lock'.format(AVD_NAME)])
+        kill_locks_cmd.invoke()
         time.sleep(10)
 
     @staticmethod
