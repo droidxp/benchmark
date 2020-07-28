@@ -169,7 +169,7 @@ class DroidFax:
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
-                logging.info('Uninstalling {0}'.format(file))
+                # logging.info('Uninstalling {0}'.format(file))
                 cls._kill_emulator()
                 #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
