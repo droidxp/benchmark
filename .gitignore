@@ -142,6 +142,7 @@ cython_debug/
 
 trace/
 results/
+data/instrumented/*.apk
 
 *.py~
 

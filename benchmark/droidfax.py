@@ -14,22 +14,22 @@ class DroidFax:
     @classmethod
     def run(cls, tool_set, *args):
         # Arg parse
-        sample = args[0].s
-        path = WORKING_DIR + cls._get_path_from_sample_param(sample)
+        # sample = args[0].s
+        # path = WORKING_DIR + sample
         repetitions = args[0].r
         timeout = args[0].t
         tools = args[0].tools
         output_format = args[0].output.lower()
         # End Arg parse
 
-        cls.phase_one_instrumentation(path)
+        cls.phase_one_instrumentation(INPUT_DIR)
         for time in timeout:
-            for repetition in range(repetitions):
-                cls.phase_two_execution(time, tool_set, tools, repetition + 1)
-                cls.phase_three_results(time, tools, path, repetition + 1)
+           for repetition in range(repetitions):
+               cls.phase_two_execution(time, tool_set, tools, repetition+1)
+               cls.phase_three_results(time, tools, INPUT_DIR, repetition+1)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
-        cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions, sample)
+        cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions)
 
     @staticmethod
     def phase_one_instrumentation(input_path):
@@ -52,7 +52,7 @@ class DroidFax:
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
-        for file in os.listdir(input_path):
+        for file in [app for app in os.listdir(input_path) if app.endswith('.apk')]:
 
             # Verify if apk is already instrumented.
             if os.path.exists(os.path.join(INSTRUMENTED_DIR, file)):
@@ -142,10 +142,15 @@ class DroidFax:
             logging.error(error_msg)
             raise Exception(error_msg)
 
-        cls._start_emulator()
+        #cls._start_emulator()
 
+        input_files = [filename for filename in os.listdir(INPUT_DIR) if filename.endswith('.apk')]
+        instrumented_apks = [app for app in os.listdir(INSTRUMENTED_DIR) if app in input_files]        
         for tool in tools:
-            for file in os.listdir(INSTRUMENTED_DIR):
+            for file in instrumented_apks:
+            
+                cls._start_emulator()
+                
                 logging.info('Installing {0}'.format(file))
                 cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
             
@@ -165,15 +170,16 @@ class DroidFax:
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
-            logging.info('Uninstalling {0}'.format(file))
-            cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
+                logging.info('Uninstalling {0}'.format(file))
+                cls._kill_emulator()
+                #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         cls._kill_emulator()
 
     @classmethod
     def phase_three_results(cls, time, tools, input_path, repetition):
         logging.info('Droidfax\'s Phase 3: Results - Repetition {0}'.format(repetition).encode('ascii'))
-
+        # TODO: var time in the same file as `import time`
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
         trace_dir_repetition = os.path.join(TRACE_DIR, str(time), str(repetition))
         result_dir_time = os.path.join(RESULTS_DIR, TIMESTAMP, str(time))
@@ -186,43 +192,19 @@ class DroidFax:
         # Collect soot dependencies
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
-
+        
         # Create a folder to store droid results
-        if not os.path.exists(RESULTS_DIR):
-            try:
-                os.mkdir(RESULTS_DIR)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(RESULTS_DIR)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(RESULTS_DIR)
+        
         # Create a folder to store and specify results by timestamp
-        if not os.path.exists(os.path.join(RESULTS_DIR, TIMESTAMP)):
-            try:
-                os.mkdir(os.path.join(RESULTS_DIR, TIMESTAMP))
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(os.path.join(RESULTS_DIR, TIMESTAMP))
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(os.path.join(RESULTS_DIR, TIMESTAMP))
+        
         # Create a folder to store and specify results by the choosen timeout
-        if not os.path.exists(result_dir_time):
-            try:
-                os.mkdir(result_dir_time)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(result_dir_time)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(result_dir_time)
+        
         # Create a folder to store and specify results by repetition
-        if not os.path.exists(result_dir_repetition):
-            try:
-                os.mkdir(result_dir_repetition)
-            except OSError:
-                error_msg = 'Error while creating folder {0}'.format(result_dir_repetition)
-                logging.error(error_msg)
-                raise Exception(error_msg)
-
+        cls._create_folder(result_dir_repetition)
+        
         for tool in tools:
 
             # Create file results tool folder.
@@ -233,7 +215,7 @@ class DroidFax:
                 logging.error(error_msg)
                 raise Exception(error_msg)
 
-            for file in os.listdir(input_path):
+            for file in [app for app in os.listdir(input_path) if app.endswith('.apk')]:
 
                 # Create file results app folder.
                 try:
@@ -335,7 +317,8 @@ class DroidFax:
     def _start_emulator(cls):
         logging.info('Starting emulator')
         start = time.time()
-        
+                
+        #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-no-window', '-netdelay', 'none'])
         start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
@@ -387,23 +370,49 @@ class DroidFax:
             uninstall_cmd.invoke()
 
     @classmethod
-    def _get_path_from_sample_param(cls, sample):
-        if (sample == 's'):
-            return '/data/input/small'
-        if (sample == 'l'):
-            return '/data/input/large'
-        else:
-            return '/data/input/small'
+    def _get_package_name(cls, file_name):
+        readlink_cmd = Command('readlink', ['-f', file_name])
+        readlink_result = readlink_cmd.invoke()
+        readlink_result_str = readlink_result.stdout.strip().decode('ascii')
+        
+        get_package_list_cmd = Command('aapt', ['list', '-a', file_name])
+        get_package_list_result = get_package_list_cmd.invoke()
+        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
+
+        match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
+        if match is None:
+            match = re.search(r'package=(.*)', get_package_list_result_str, re.MULTILINE)
+            if match is None:
+                return None
+        return match.group(1)
+
+    # @classmethod
+    # def _get_path_from_sample_param(cls, sample):
+    #     if (sample == 's'):
+    #         return '/data/input/small'
+    #     if (sample == 'l'):
+    #         return '/data/input/large'
+    #     else:
+    #         return '/data/input/small'
+    @classmethod
+    def _create_folder(cls,folder_name):
+        if not os.path.exists(folder_name):
+            try:
+                os.mkdir(folder_name)
+            except OSError:
+                error_msg = 'Error while creating folder {0}'.format(folder_name)
+                logging.error(error_msg)
+                raise Exception(error_msg)
 
     @classmethod
-    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions, sample):
+    def _log_excecution_meta(cls, tools, timeout, TIMESTAMP, repetitions):
         end = time.time()
         elapsed = end - START
         with open(os.path.join(RESULTS_DIR, TIMESTAMP, 'log.txt'), 'wb') as execution_log:
             execution_log.write('############# {0} #############\n\n'.format(TIMESTAMP).encode('ascii'))
-            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2} -s {3}\n'.format(' '.join(tools), timeout, repetitions, sample).encode('ascii'))
+            execution_log.write('Cmd: python main.py -tools {0} -t {1} -r {2}\n'.format(' '.join(tools), timeout, repetitions).encode('ascii'))
             execution_log.write('It took {0} minutes and {1} seconds to complete this benchmark\n'.format(int(elapsed / 60), elapsed % 60).encode('ascii'))
             execution_log.write('Tools: {0}\n'.format(' '.join(tools)).encode('ascii'))
             execution_log.write('Timeout: {0}\n'.format(timeout).encode('ascii'))
             execution_log.write('Repetitions: {0}\n'.format(repetitions).encode('ascii'))
-            execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))
+            # execution_log.write('Sample: {0}\n'.format(sample).encode('ascii'))
