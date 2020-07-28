@@ -168,7 +168,7 @@ class DroidFax:
                     logging.debug("Execution took {0} seconds".format(int(end-start)))
                     proc.kill()
 
-                # logging.info('Uninstalling {0}'.format(file))
+                logging.info('Done testing {0}'.format(file))
                 cls._kill_emulator()
                 #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
@@ -345,6 +345,7 @@ class DroidFax:
         kill_locks_cmd = Command('rm', ['~/.android/avd/{}.avd/*.lock'.format(AVD_NAME)])
         kill_locks_cmd.invoke()
         time.sleep(10)
+        logging.info('Emulator has been killed')
 
     @staticmethod
     def _install_apk(file):
