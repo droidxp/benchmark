@@ -17,6 +17,7 @@ COLUMN_COVERAGE_MALIGN = 'coverage_malign'
 COLUMN_APPS = 'apps'
 COLUMN_ACCURACY = 'accuracy'
 COLUMN_TOOL = 'tool'
+COLUMN_TOOLS = 'tools'
 
 COVERAGE_CLASSES_USR = 'qt_classes_usr'
 COVERAGE_CLASSES_3RD = 'qt_classes_3rd'

@@ -52,40 +52,48 @@ class AbstractOutputFormat():
         # Iterate timeouts
         for timeout_num in timeouts:
             timeout = str(timeout_num)
+            results[timeout] = {}
             repetition_results = []
             # Iterate repetitions
             for rep_num in range(repetitions):
                 rep = str(rep_num + 1)
                 repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools, sample_size))
-            results[timeout] = self._merge_repetitions(execution_ts, timeout, tools, sample_size, repetition_results)
+            results[timeout] = self._post_process_timeout_results(execution_ts, timeout, tools, sample_size, repetition_results)
 
         return results
 
-    def _merge_repetitions(self, execution_ts, timeout, tools, sample_size, repetition_results):
+    def _post_process_timeout_results(self, execution_ts, timeout, tools, sample_size, repetition_results):
         """Merge the results from all repetitions, computing the average
-        time of the executions."""
+        time of the executions. And iterate each app and find which tool had
+        detected the malware."""
         merge_result = {}
+        merge_result[constants.COLUMN_TOOLS] = {}
+        merge_result[constants.COLUMN_APPS] = {}
 
         # Initialize values
         for rep, result in enumerate(repetition_results):
             for tool in tools:
-                merge_result[tool] = {}
-                merge_result[tool][constants.COLUMN_MALWARE] = .0
-                merge_result[tool][constants.COLUMN_COVERAGE] = .0
-                merge_result[tool][constants.COLUMN_ACCURACY] = .0
-                merge_result[tool][constants.COLUMN_APPS] = {}
+                merge_result[constants.COLUMN_TOOLS][tool] = {}
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_MALWARE] = .0
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_COVERAGE] = .0
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY] = .0
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS] = {}
 
                 # Getting apps which were effectively executed
                 tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
                 apps = self._get_app_versions(tool_result_dir, sample_size)
                 for app_name in apps:
-                    merge_result[tool][constants.COLUMN_APPS][app_name] = {}
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_NAME] = result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_NAME]
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] = .0
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] = .0
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] = .0
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] = .0
+                    if app_name not in merge_result[constants.COLUMN_APPS]:
+                        merge_result[constants.COLUMN_APPS][app_name] = {}
+                        merge_result[constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] = False
+                        merge_result[constants.COLUMN_APPS][app_name][constants.COLUMN_TOOLS] = []
 
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name] = {}
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_NAME] = result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_NAME]
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] = False
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] = .0
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] = .0
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] = .0
 
         # Compute repetitions average
         for rep, result in enumerate(repetition_results):
@@ -94,16 +102,22 @@ class AbstractOutputFormat():
                 tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
                 apps = self._get_app_versions(tool_result_dir, sample_size)
                 for app_name in apps:
+
+                    if result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE]:
+                        merge_result[constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] = True
+                        if tool not in merge_result[constants.COLUMN_APPS][app_name][constants.COLUMN_TOOLS]:
+                            merge_result[constants.COLUMN_APPS][app_name][constants.COLUMN_TOOLS].append(tool)
+
                     # Compute average of the repetitions of each app execution
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] / len(repetition_results)
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] / len(repetition_results)
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] / len(repetition_results)
-                    merge_result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] / len(repetition_results)
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE] |= result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE]
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_BENIGN] / len(repetition_results)
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE_MALIGN] / len(repetition_results)
+                    merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] += result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_COVERAGE] / len(repetition_results)
 
                 # Compute average of the repetitions of each tool execution
-                merge_result[tool][constants.COLUMN_MALWARE] += result[tool][constants.COLUMN_MALWARE] / len(repetition_results)
-                merge_result[tool][constants.COLUMN_COVERAGE] += result[tool][constants.COLUMN_COVERAGE] / len(repetition_results)
-                merge_result[tool][constants.COLUMN_ACCURACY] += result[tool][constants.COLUMN_ACCURACY] / len(repetition_results)
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_MALWARE] += result[tool][constants.COLUMN_MALWARE] / len(repetition_results)
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_COVERAGE] += result[tool][constants.COLUMN_COVERAGE] / len(repetition_results)
+                merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY] += result[tool][constants.COLUMN_ACCURACY] / len(repetition_results)
         return merge_result
 
     def _process_repetition(self, execution_ts, timeout, repetition, tools, sample_size):
@@ -134,7 +148,7 @@ class AbstractOutputFormat():
         # Compute average results per tool
         tool_results[constants.COLUMN_MALWARE] = accurage_sum
         tool_results[constants.COLUMN_COVERAGE] = coverage_sum / len(tool_results[constants.COLUMN_APPS])
-        tool_results[constants.COLUMN_ACCURACY] = accurage_sum / len(tool_results[constants.COLUMN_APPS])
+        tool_results[constants.COLUMN_ACCURACY] = (accurage_sum / len(tool_results[constants.COLUMN_APPS])) * 100
         return tool_results
 
     def _process_app(self, app_name, app):

@@ -42,8 +42,8 @@ class OutputFormatSpec(AbstractOutputFormat):
                     row[tool] = 0
                 is_first_row = False
             row[constants.COLUMN_TIMEOUT] = int(timeout) / 60 # in minutes
-            for tool in results[timeout]:
-                row[tool] = round(results[timeout][tool][constants.COLUMN_COVERAGE], 2)
+            for tool in results[timeout][constants.COLUMN_TOOLS]:
+                row[tool] = round(results[timeout][constants.COLUMN_TOOLS][tool][constants.COLUMN_COVERAGE], 2)
             coverage_data.append(row)
 
         df = pd.DataFrame(coverage_data)
@@ -62,10 +62,10 @@ class OutputFormatSpec(AbstractOutputFormat):
         
         for timeout in results:
             accuracy_data = []
-            for tool in results[timeout]:
+            for tool in results[timeout][constants.COLUMN_TOOLS]:
                 dictionary = {}
                 dictionary[constants.COLUMN_TOOL] = tool
-                dictionary[constants.COLUMN_ACCURACY] = results[timeout][tool][constants.COLUMN_ACCURACY]
+                dictionary[constants.COLUMN_ACCURACY] = results[timeout][constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY]
                 accuracy_data.append(dictionary)
             
             df = pd.DataFrame(accuracy_data)
