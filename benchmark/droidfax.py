@@ -173,7 +173,7 @@ class DroidFax:
                 cls._kill_emulator()
                 #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
-        cls._kill_emulator()
+        # cls._kill_emulator()
 
     @classmethod
     def phase_three_results(cls, time, tools, input_path, repetition):
