@@ -5,6 +5,7 @@ import sys
 import argparse
 import importlib
 
+from settings import TIMESTAMP, WORKING_DIR
 from benchmark.droidfax import DroidFax
 
 
@@ -12,6 +13,7 @@ def qualified_name(p):
     return p.replace(".py", "").replace("./", "").replace("/", ".")
 
 tools = {}
+output_formats = {}
 
 def load_tools():
     '''Load all available tools. 
@@ -28,10 +30,27 @@ def load_tools():
                 tool_class = getattr(tool_module, 'ToolSpec')
                 tool_instance = tool_class()
                 tools[tool_instance.name] = tool_instance
+
+def load_output_formats():
+    '''Load all available output formats. 
+      
+     A output format must be defined in a subdirectory within 
+     the output_formats folder, in a python module named output_format.py. 
+     This module must also declare a class named OutputFormatSpec, 
+     which shoud inherit from AbstractOutputFormats. 
+    '''
+    for subdir, dirs, files in os.walk(os.path.join(".", "benchmark", "output_formats")):
+        for filename in files:
+            if filename == 'output_format.py':
+                output_format_module = importlib.import_module(qualified_name(subdir + os.sep + filename))
+                output_format_class = getattr(output_format_module, 'OutputFormatSpec')
+                output_format_instance = output_format_class()
+                output_formats[output_format_instance.name] = output_format_instance
                         
 if __name__ == '__main__':
 
     load_tools()
+    load_output_formats()
     
     # Start catching arguments
     parser = argparse.ArgumentParser(description='Benchmarking droidfax')
@@ -52,8 +71,11 @@ if __name__ == '__main__':
     # parser.add_argument('-s', default='/data/input/small', help='(sample) SAMPLE that set the folder with the target APKs in the experiment')
     # choices=['s', 'l'],
 
-    # Output format
-    parser.add_argument('-output', default='PDF', choices=['PDF', 'pdf', 'LATEX', 'latex', 'CSV', 'csv', 'XML', 'xml'], help='(output) OUTPUT FORMAT that will be used to store results')
+    # Lists available output formats
+    parser.add_argument('--list-outputs', help="List available output formats", action="store_true")
+
+    # Sets the output format
+    parser.add_argument('--output', default='basic', help='OUTPUT FORMAT that will be used to show results (default: basic)')
 
     args = parser.parse_args()
 
@@ -67,11 +89,19 @@ if __name__ == '__main__':
         for key in tools:
             print(" [{0}] {1} \n".format(key, tools[key].description))
         sys.exit("")
+
+    if args.list_outputs:
+        logging.info(" [Listing available output formats] \n")
+
+        for key in output_formats:
+            print(" [{0}] {1} \n".format(key, output_formats[key].description))
+        sys.exit("")
         
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
 
     DroidFax.run(tools, args)
+    output_formats[args.output].process(TIMESTAMP, args.t, args.r, args.tools, args.s)
 
     end = time.time()
     elapsed = end - start
