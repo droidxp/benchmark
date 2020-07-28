@@ -369,23 +369,6 @@ class DroidFax:
             uninstall_cmd = Command('adb', ['-s', 'emulator-5554', 'uninstall', package_name])
             uninstall_cmd.invoke()
 
-    @classmethod
-    def _get_package_name(cls, file_name):
-        readlink_cmd = Command('readlink', ['-f', file_name])
-        readlink_result = readlink_cmd.invoke()
-        readlink_result_str = readlink_result.stdout.strip().decode('ascii')
-        
-        get_package_list_cmd = Command('aapt', ['list', '-a', file_name])
-        get_package_list_result = get_package_list_cmd.invoke()
-        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
-
-        match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
-        if match is None:
-            match = re.search(r'package=(.*)', get_package_list_result_str, re.MULTILINE)
-            if match is None:
-                return None
-        return match.group(1)
-
     # @classmethod
     # def _get_path_from_sample_param(cls, sample):
     #     if (sample == 's'):
@@ -394,6 +377,7 @@ class DroidFax:
     #         return '/data/input/large'
     #     else:
     #         return '/data/input/small'
+
     @classmethod
     def _create_folder(cls,folder_name):
         if not os.path.exists(folder_name):

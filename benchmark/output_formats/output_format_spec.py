@@ -32,7 +32,7 @@ class AbstractOutputFormat():
         '''
         pass
 
-    def process(self, execution_ts, timeouts, repetitions, tools, sample_size):
+    def process(self, execution_ts, timeouts, repetitions, tools):
         '''This is the operation that allows the execution of an output format.
         It works as a template method, implementing a loging that delegates to
         the abstract method of this class the actual logic.
@@ -42,10 +42,10 @@ class AbstractOutputFormat():
            locate the results file.
         '''
         logging.info('Generating output...')
-        results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools, sample_size)
+        results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools)
         self.execute_output_format_specific_logic(execution_ts, results)
 
-    def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools, sample_size):
+    def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools):
         # Initialize results
         results = {}
 
@@ -57,12 +57,12 @@ class AbstractOutputFormat():
             # Iterate repetitions
             for rep_num in range(repetitions):
                 rep = str(rep_num + 1)
-                repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools, sample_size))
-            results[timeout] = self._post_process_timeout_results(execution_ts, timeout, tools, sample_size, repetition_results)
+                repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools))
+            results[timeout] = self._post_process_timeout_results(execution_ts, timeout, tools, repetition_results)
 
         return results
 
-    def _post_process_timeout_results(self, execution_ts, timeout, tools, sample_size, repetition_results):
+    def _post_process_timeout_results(self, execution_ts, timeout, tools, repetition_results):
         """Merge the results from all repetitions, computing the average
         time of the executions. And iterate each app and find which tool had
         detected the malware."""
@@ -81,7 +81,7 @@ class AbstractOutputFormat():
 
                 # Getting apps which were effectively executed
                 tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
-                apps = self._get_app_versions(tool_result_dir, sample_size)
+                apps = self._get_app_versions(tool_result_dir)
                 for app_name in apps:
                     if app_name not in merge_result[constants.COLUMN_APPS]:
                         merge_result[constants.COLUMN_APPS][app_name] = {}
@@ -100,7 +100,7 @@ class AbstractOutputFormat():
             for tool in tools:
                 # Getting apps which were effectively executed
                 tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, str(rep + 1), tool)
-                apps = self._get_app_versions(tool_result_dir, sample_size)
+                apps = self._get_app_versions(tool_result_dir)
                 for app_name in apps:
 
                     if result[tool][constants.COLUMN_APPS][app_name][constants.COLUMN_MALWARE]:
@@ -120,15 +120,15 @@ class AbstractOutputFormat():
                 merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY] += result[tool][constants.COLUMN_ACCURACY] / len(repetition_results)
         return merge_result
 
-    def _process_repetition(self, execution_ts, timeout, repetition, tools, sample_size):
+    def _process_repetition(self, execution_ts, timeout, repetition, tools):
         """Process the executions of each repetition."""
         rep_results = {}
         # Iterate tools
         for tool in tools:
-            rep_results[tool] = self._process_tool(execution_ts, timeout, repetition, tool, sample_size)
+            rep_results[tool] = self._process_tool(execution_ts, timeout, repetition, tool)
         return rep_results
 
-    def _process_tool(self, execution_ts, timeout, rep, tool, sample_size):
+    def _process_tool(self, execution_ts, timeout, rep, tool):
         """Process the executions of each tool."""
         tool_results = {}
         tool_results[constants.COLUMN_APPS] = {}
@@ -137,7 +137,7 @@ class AbstractOutputFormat():
 
         # Iterate apps (effectively executed)
         tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, rep, tool)
-        apps = self._get_app_versions(tool_result_dir, sample_size)
+        apps = self._get_app_versions(tool_result_dir)
         for app_name in apps:
             app_result = self._process_app(app_name, apps[app_name])
             coverage_sum += app_result[constants.COLUMN_COVERAGE]
@@ -221,7 +221,7 @@ class AbstractOutputFormat():
         ]
         return df.loc[2]
 
-    def _get_app_versions(self, tool_result_dir, sample_size):
+    def _get_app_versions(self, tool_result_dir):
         """Recover result forlder of the benign and malign versions of an
         app.
 
@@ -229,8 +229,7 @@ class AbstractOutputFormat():
         """
         apps = {}
         for executed_apk in os.listdir(tool_result_dir):
-            input_dir = utils.get_input_path_from_sample(sample_size)
-            simple_name = utils.get_package_name(os.path.join(input_dir, executed_apk))
+            simple_name = utils.get_package_name(os.path.join(INPUT_DIR, executed_apk))
             if not simple_name in apps:
                 apps[simple_name] = {}
             if executed_apk.startswith(constants.PREFIX_BENIGN):

@@ -36,7 +36,7 @@ class OutputFormatSpec(AbstractOutputFormat):
         for timeout in results:
             row = {}
             if is_first_row:
-                for tool in results[timeout]:
+                for tool in results[timeout][constants.COLUMN_TOOLS]:
                     headers.append(tool)
                     row[constants.COLUMN_TIMEOUT] = 0
                     row[tool] = 0
