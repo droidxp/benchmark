@@ -101,7 +101,7 @@ if __name__ == '__main__':
     logging.info('############# STARTING BENCHMARK #############')
 
     DroidFax.run(tools, args)
-    output_formats[args.output].process(TIMESTAMP, args.t, args.r, args.tools, args.s)
+    output_formats[args.output].process(TIMESTAMP, args.t, args.r, args.tools)
 
     end = time.time()
     elapsed = end - start
