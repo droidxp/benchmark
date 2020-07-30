@@ -232,7 +232,7 @@ class AbstractOutputFormat():
             simple_name = utils.get_package_name(os.path.join(INPUT_DIR, executed_apk))
             if not simple_name in apps:
                 apps[simple_name] = {}
-            if executed_apk.startswith(constants.PREFIX_BENIGN):
+            if executed_apk.lower().startswith(constants.PREFIX_BENIGN):
                 apps[simple_name]['benign'] = os.path.join(tool_result_dir, executed_apk)
             else:
                 apps[simple_name]['malign'] = os.path.join(tool_result_dir, executed_apk)

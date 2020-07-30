@@ -1,5 +1,5 @@
-PREFIX_BENIGN = 'benign'
-PREFIX_MALIGN = 'malign'
+PREFIX_BENIGN = 'b'
+PREFIX_MALIGN = 'm'
 
 SECURITY_REPORT_DIR = 'security_report'
 SECURITY_REPORT_FILE = 'src.txt'

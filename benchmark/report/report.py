@@ -330,6 +330,7 @@ class Report:
             tools.append(first_row)
         
         df = pd.DataFrame(tools)  # , columns=headers)
+        df.sort_values(by=['timeout'], inplace=True)
         
         plt.close('all')
         ax = plt.gca()
@@ -442,8 +443,8 @@ class Report:
         benign_df = cls.__read_coverage_file(os.path.abspath(os.path.join(rep_result_dir, app[0], GERERAL_REPORT_DIR, GENERAL_REPORT_COVERAGE_FILE)))
         malign_df = cls.__read_coverage_file(os.path.abspath(os.path.join(rep_result_dir, app[1], GERERAL_REPORT_DIR, GENERAL_REPORT_COVERAGE_FILE)))
         # transforma o dado em float, ja em porcentual (multiplicado por 100)
-        benign_coverage = float(str(benign_df[COVERAGE_METHODS_TOTAL]).replace(',', '.')) * 100
-        malign_coverage = float(str(malign_df[COVERAGE_METHODS_TOTAL]).replace(',', '.')) * 100
+        benign_coverage = float(str(benign_df[COVERAGE_METHODS_USR]).replace(',', '.')) * 100
+        malign_coverage = float(str(malign_df[COVERAGE_METHODS_USR]).replace(',', '.')) * 100
         # calcula a media de cobertura do par
         average_coverage = (benign_coverage + malign_coverage) / 2
         # retorna uma tupla com as coberturas
