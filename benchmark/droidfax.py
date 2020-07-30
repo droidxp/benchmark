@@ -4,12 +4,24 @@ import time
 
 from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
+from contextlib import contextmanager
 import signal
 import re
 import shutil
 import utils
 
 class DroidFax:
+
+    @classmethod
+    @contextmanager
+    def create_emulator(cls):
+        # Code to acquire resource, e.g.:
+        emulator = cls._start_emulator()
+        try:
+            yield emulator
+        finally:
+            # Code to release resource, e.g.:
+            cls._kill_emulator()
 
     @classmethod
     def run(cls, tool_set, *args):
@@ -148,29 +160,29 @@ class DroidFax:
         instrumented_apks = [app for app in os.listdir(INSTRUMENTED_DIR) if app in input_files]        
         for tool in tools:
             for file in instrumented_apks:
-            
-                cls._start_emulator()
+                #cls._start_emulator()
+                with cls.create_emulator() as emulator:
                 
-                logging.info('Installing {0}'.format(file))
-                cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
-                logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-                logcat_file = os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
+                    logging.info('Installing {0}'.format(file))
+                    cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
+                    logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
+                    logcat_file = os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
 
-                with open(logcat_file, 'wb') as log_cat:
-                    proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
+                    with open(logcat_file, 'wb') as log_cat:
+                        proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
 
-                    logging.info('Executing {0}'.format(file))
-                    start = time.time()
+                        logging.info('Executing {0}'.format(file))
+                        start = time.time()
 
-                    logging.info("Testing with {0} {1} seconds".format(tool, int(timeout)))
-                    tool_set[tool].execute(trace_dir_repetition, file, timeout)
-                    
-                    end = time.time()
-                    logging.debug("Execution took {0} seconds".format(int(end-start)))
-                    proc.kill()
+                        logging.info("Testing with {0} {1} seconds".format(tool, int(timeout)))
+                        tool_set[tool].execute(trace_dir_repetition, file, timeout)
+                        
+                        end = time.time()
+                        logging.debug("Execution took {0} seconds".format(int(end-start)))
+                        proc.kill()
 
-                logging.info('Done testing {0}'.format(file))
-                cls._kill_emulator()
+                    logging.info('Done testing {0}'.format(file))
+                #cls._kill_emulator()
                 #cls._uninstall_apk(os.path.join(INSTRUMENTED_DIR, file))
 
         # cls._kill_emulator()
