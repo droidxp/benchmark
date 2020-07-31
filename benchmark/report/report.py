@@ -4,8 +4,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from jinja2 import Environment, FileSystemLoader
 
-PREFIX_BENIGN = 'B'
-PREFIX_MALIGN = 'M'
+# *************************************************************
+# DEPRECATED
+# *************************************************************
+
+
+PREFIX_BENIGN = 'benign'
+PREFIX_MALIGN = 'malicious'
 
 SECURITY_REPORT_DIR = 'security_report'
 SECURITY_REPORT_FILE = 'src.txt'
@@ -337,7 +342,7 @@ class Report:
         plot = df.plot(kind='line', x='timeout', ax=ax)
         plot.set_xlabel("Minutes") 
         plot.set_ylabel("Coverage")
-        # plt.show()
+        plt.show()
         # fig = plot.get_figure()
         # result_file = os.path.abspath(os.path.join(cls.REPORT_DIR, 'benchmark_coverage_graph.png'))
         # fig.savefig(result_file)
@@ -403,13 +408,16 @@ class Report:
             if app_result_dir.startswith(PREFIX_BENIGN):
                 apps[simple_name][0] = app_result_dir
             else:
-                apps[simple_name][1] = app_result_dir        
+                apps[simple_name][1] = app_result_dir    
+        print("get_apps: ",apps)    
         return list(apps.values())
         
     @classmethod
     def __get_simple_name(cls, name):
         """Recupera o nome 'simples' do aplicativo, removendo o prefixo e o hash, retornando apenas o nome do pacote"""
-        return name[1:name.rfind('-')]
+        if name.startswith(PREFIX_BENIGN):
+            return name[len(PREFIX_BENIGN):name.rfind('-')]
+        return name[len(PREFIX_MALIGN):name.rfind('-')]
     
     @classmethod
     def __is_malware(cls, rep_result_dir, app):
@@ -563,6 +571,6 @@ BASE_DIR = '/pedro/desenvolvimento/workspaces/workspace-benchmark/benchmark'
 results_dir = os.path.join(BASE_DIR, 'results')
 report_dir = os.path.join(BASE_DIR, 'report')
 # executions = ['202006190831', '202006190832', '202006190833', '202006190834', '202006190835', '202006190836', '202006190837']
-executions = ['20200707105735']
+executions = ['20200730173944']
 
 Report.process_results(results_dir, report_dir, executions)    
