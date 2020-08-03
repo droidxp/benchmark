@@ -108,5 +108,12 @@ if __name__ == '__main__':
 
     end = time.time()
     elapsed = end - start
-    logging.info('It took {0} minutes and {1} seconds to complete this benchmark'.format(int(elapsed / 60), elapsed % 60))
+    elapsed = 23232
+    if elapsed > 60:
+        if elapsed > 3600:
+            logging.info('It took {0} hours, {1} minutes and {2} seconds to complete this benchmark'.format(int(elapsed / 3600), int((elapsed % 3600) / 60), (elapsed % 3600) % 60))
+        else:
+            logging.info('It took {0} minutes and {1} seconds to complete this benchmark'.format(int(elapsed / 60), elapsed % 60))
+    else: 
+        logging.info('It took {0} seconds to complete this benchmark'.format(elapsed))
     logging.info('############# ENDING BENCHMARK #############')
