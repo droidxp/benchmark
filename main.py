@@ -77,11 +77,14 @@ if __name__ == '__main__':
     # Sets the output format
     parser.add_argument('--output', default='basic', help='OUTPUT FORMAT that will be used to show results (default: basic)')
 
+    # Enable DEBUG mode.
+    parser.add_argument('--debug', help='Run in DEBUG mode (default: false)', dest='debug', action='store_true')
+
     args = parser.parse_args()
 
     # End catching arguments
 
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG if args.debug else logging.INFO)
 
     if args.list_tools:
         logging.info(" [Listing available tools] \n")

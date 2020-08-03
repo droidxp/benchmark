@@ -33,17 +33,17 @@ class OutputFormatSpec(AbstractOutputFormat):
         coverage_data = []
         headers = [constants.COLUMN_TIMEOUT]
         is_first_row = True
-        for timeout in results:
+        for timeout in results[constants.COLUMN_TIMEOUTS]:
             row = {}
             if is_first_row:
-                for tool in results[timeout][constants.COLUMN_TOOLS]:
+                for tool in results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS]:
                     headers.append(tool)
                     row[constants.COLUMN_TIMEOUT] = 0
                     row[tool] = 0
                 is_first_row = False
             row[constants.COLUMN_TIMEOUT] = int(timeout) / 60 # in minutes
-            for tool in results[timeout][constants.COLUMN_TOOLS]:
-                row[tool] = round(results[timeout][constants.COLUMN_TOOLS][tool][constants.COLUMN_COVERAGE], 2)
+            for tool in results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS]:
+                row[tool] = round(results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS][tool][constants.COLUMN_COVERAGE], 2)
             coverage_data.append(row)
 
         df = pd.DataFrame(coverage_data)
@@ -60,12 +60,12 @@ class OutputFormatSpec(AbstractOutputFormat):
 
     def _generate_accuracy_graph_bar(self, report_dir, results):
         
-        for timeout in results:
+        for timeout in results[constants.COLUMN_TIMEOUTS]:
             accuracy_data = []
-            for tool in results[timeout][constants.COLUMN_TOOLS]:
+            for tool in results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS]:
                 dictionary = {}
                 dictionary[constants.COLUMN_TOOL] = tool
-                dictionary[constants.COLUMN_ACCURACY] = results[timeout][constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY]
+                dictionary[constants.COLUMN_ACCURACY] = results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY]
                 accuracy_data.append(dictionary)
             
             df = pd.DataFrame(accuracy_data)

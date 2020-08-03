@@ -137,8 +137,8 @@ class DroidFax:
                 for file in os.listdir(os.path.join(trace_dir_repetition, tool)):
                     os.remove(os.path.join(trace_dir_repetition, tool, file))
 
-        except OSError:
-            error_msg = 'Error while creating folder {0}'.format(TRACE_DIR)
+        except OSError as e:
+            error_msg = 'Error while creating folder {0}: {1}'.format(TRACE_DIR, e)
             logging.error(error_msg)
             raise Exception(error_msg)
 

@@ -48,17 +48,19 @@ class AbstractOutputFormat():
     def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools):
         # Initialize results
         results = {}
+        results[constants.COLUMN_TIMEOUTS] = {}
 
         # Iterate timeouts
         for timeout_num in timeouts:
             timeout = str(timeout_num)
-            results[timeout] = {}
             repetition_results = []
             # Iterate repetitions
             for rep_num in range(repetitions):
                 rep = str(rep_num + 1)
                 repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools))
-            results[timeout] = self._post_process_timeout_results(execution_ts, timeout, tools, repetition_results)
+            results[constants.COLUMN_TIMEOUTS][timeout] = {}
+            results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_REPETITIONS] = repetition_results
+            results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE] = self._post_process_timeout_results(execution_ts, timeout, tools, repetition_results)
 
         return results
 
@@ -189,8 +191,8 @@ class AbstractOutputFormat():
         benign_df = self._read_coverage_file(benign_path)
         malign_df = self._read_coverage_file(malign_path)
         # Compute data from coverage file content
-        benign_coverage = float(str(benign_df[constants.COVERAGE_METHODS_TOTAL]).replace(',', '.')) * 100
-        malign_coverage = float(str(malign_df[constants.COVERAGE_METHODS_TOTAL]).replace(',', '.')) * 100
+        benign_coverage = float(str(benign_df[constants.COVERAGE_METHODS_USR]).replace(',', '.')) * 100
+        malign_coverage = float(str(malign_df[constants.COVERAGE_METHODS_USR]).replace(',', '.')) * 100
         # Compute coverage average
         average_coverage = (benign_coverage + malign_coverage) / 2
         return (benign_coverage, malign_coverage, average_coverage)
