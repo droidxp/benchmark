@@ -330,7 +330,7 @@ class DroidFax:
         start = time.time()
                 
         #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-no-window', '-netdelay', 'none'])
-        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data'])
+        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-noaudio', '-no-snapshot-save'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
         logging.info('Waiting for emulator to boot')
