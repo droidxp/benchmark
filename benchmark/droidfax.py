@@ -1,6 +1,7 @@
 import logging
 import os
 import time
+import sys
 
 from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
@@ -64,7 +65,12 @@ class DroidFax:
         droidfax_jar = os.path.join(LIBS_DIR, 'droidfax.jar')
         soot_cp = "{0}:{1}".format(droidfax_jar, ANDROID_JAR_PATH)
 
-        for file in [app for app in os.listdir(input_path) if app.endswith('.apk')]:
+        apks = [app for app in os.listdir(input_path) if app.endswith('.apk')]
+        if len(apks) < 2:
+            logging.error('There is not apks enough. Please provide all apk files at <benchmark_folder>/data/input folder')
+            sys.exit(1)
+
+        for file in apks:
 
             # Verify if apk is already instrumented.
             if os.path.exists(os.path.join(INSTRUMENTED_DIR, file)):
