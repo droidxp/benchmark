@@ -7,6 +7,7 @@ import importlib
 
 from settings import TIMESTAMP, WORKING_DIR
 from benchmark.droidfax import DroidFax
+from benchmark.version import __version__
 
 
 def qualified_name(p):
@@ -80,6 +81,9 @@ if __name__ == '__main__':
     # Enable DEBUG mode.
     parser.add_argument('--debug', help='Run in DEBUG mode (default: false)', dest='debug', action='store_true')
 
+    # Print program version
+    parser.add_argument('--version', help='Print the benchmark version', dest='version', action='store_true')
+
     args = parser.parse_args()
 
     # End catching arguments
@@ -91,14 +95,18 @@ if __name__ == '__main__':
 
         for key in tools:
             print(" [{0}] {1} \n".format(key, tools[key].description))
-        sys.exit("")
+        sys.exit(0)
 
     if args.list_outputs:
         logging.info(" [Listing available output formats] \n")
 
         for key in output_formats:
             print(" [{0}] {1} \n".format(key, output_formats[key].description))
-        sys.exit("")
+        sys.exit(0)
+
+    if args.version:
+        print('v{0}'.format(__version__))
+        sys.exit(0)
         
     start = time.time()
     logging.info('############# STARTING BENCHMARK #############')
