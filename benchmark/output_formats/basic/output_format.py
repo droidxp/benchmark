@@ -36,10 +36,12 @@ class OutputFormatSpec(AbstractOutputFormat):
         for timeout in results[constants.COLUMN_TIMEOUTS]:
             row = {}
             if is_first_row:
+                first_row = {}
+                first_row[constants.COLUMN_TIMEOUT] = 0
                 for tool in results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS]:
                     headers.append(tool)
-                    row[constants.COLUMN_TIMEOUT] = 0
-                    row[tool] = 0
+                    first_row[tool] = 0
+                coverage_data.append(first_row)
                 is_first_row = False
             row[constants.COLUMN_TIMEOUT] = int(timeout) / 60 # in minutes
             for tool in results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE][constants.COLUMN_TOOLS]:
