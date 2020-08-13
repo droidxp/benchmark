@@ -336,16 +336,18 @@ class DroidFax:
         start = time.time()
                 
         #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-no-window', '-netdelay', 'none'])
-        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-noaudio', '-no-snapshot-save'])
+        start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-noaudio', '-no-snapshot-save', '-delay-adb'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
 
         logging.info('Waiting for emulator to boot')
-        check_emulator_cmd = Command('adb', ['-s', 'emulator-5554', 'shell', 'getprop', 'init.svc.bootanim'])
-        check_result = check_emulator_cmd.invoke()
-        while check_result.stdout.strip().decode('ascii') != 'stopped':
-            time.sleep(5)
-            logging.info('Waiting for emulator to boot')
-            check_result = check_emulator_cmd.invoke()
+        #check_emulator_cmd = Command('adb', ['-s', 'emulator-5554', 'shell', 'getprop', 'init.svc.bootanim'])
+        #check_result = check_emulator_cmd.invoke()
+        #while check_result.stdout.strip().decode('ascii') != 'stopped':
+        #    time.sleep(5)
+        #    logging.info('Waiting for emulator to boot')
+        #    check_result = check_emulator_cmd.invoke()
+        wait_emulator_cmd = Command('adb', ['wait-for-device'])
+        wait_emulator_cmd.invoke()
 
         logging.info('Emulator booted!')
         end = time.time()
