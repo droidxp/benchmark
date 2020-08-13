@@ -43,7 +43,7 @@ class AbstractOutputFormat():
         '''
         logging.info('Generating output...')
         results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools)
-        self.execute_output_format_specific_logic(execution_ts, results)
+        self.execute_output_format_specific_logic(execution_ts, timeouts, repetitions, tools, results)
 
     def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools):
         # Initialize results
