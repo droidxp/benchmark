@@ -7,11 +7,11 @@ from benchmark.commands.command import Command
 def get_package_name(apk_path):
     readlink_cmd = Command('readlink', ['-f', apk_path])
     readlink_result = readlink_cmd.invoke()
-    readlink_result_str = readlink_result.stdout.strip().decode('ascii')
+    readlink_result_str = readlink_result.stdout.strip().decode('ascii', 'ignore')
     
     get_package_list_cmd = Command('aapt', ['list', '-a', apk_path])
     get_package_list_result = get_package_list_cmd.invoke()
-    get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
+    get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii', 'ignore')
 
     match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
     if match is None:

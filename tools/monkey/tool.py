@@ -35,11 +35,11 @@ class ToolSpec(AbstractTool):
     def _get_package_name(self, fileName):
         readlink_cmd = Command('readlink', ['-f', fileName])
         readlink_result = readlink_cmd.invoke()
-        readlink_result_str = readlink_result.stdout.strip().decode('ascii')
+        readlink_result_str = readlink_result.stdout.strip().decode('ascii', 'ignore')
         
         get_package_list_cmd = Command('aapt', ['list', '-a', fileName])
         get_package_list_result = get_package_list_cmd.invoke()
-        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii')
+        get_package_list_result_str = get_package_list_result.stdout.strip().decode('ascii', 'ignore')
 
         match = re.search(r'Package Group .* packageCount=1 name=(.*)', get_package_list_result_str, re.MULTILINE)
         if match is None:
