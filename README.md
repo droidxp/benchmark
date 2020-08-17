@@ -88,7 +88,7 @@ Here is a sample on how to use the benchmark arguments:
    touch tools/bananadroid/\_\_init\_\_.py
    touch tools/bananadroid/tool.py
 ```
-2. Create tool class as AbstractTool child and implements `execute_tool_specific_logic` function
+2. Create ToolSpec class, as AbstractTool child, and `execute_tool_specific_logic` function
 ```python
 from ..tool_spec import AbstractTool
 
