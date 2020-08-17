@@ -8,6 +8,7 @@ Simplifying the comparison of existing tools for mining android sandboxes.
 - [Dependencies](#dependencies)
 - [How to run](#how-to-run)
 - [How to add your tool](#how-to-add-your-tool)
+- [Tool Specific Dependencies](#tool-specific-dependencies)
 
 ## Description
 
