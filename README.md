@@ -7,6 +7,7 @@ Simplifying the comparison of existing tools for mining android sandboxes.
 - [Description](#description)
 - [Dependencies](#dependencies)
 - [How to run](#how-to-run)
+- [How to add your tool](#how-to-add-your-tool)
 
 ## Description
 
@@ -79,6 +80,49 @@ Here is a sample on how to use the benchmark arguments:
 
     python main.py -tools monkey droidbot -t 60 -r 3
     
+## How to add your tool
+
+1. Create a new package with your tool name
+```bash
+   mkdir tools/bananadroid
+   touch tools/bananadroid/\_\_init\_\_.py
+   touch tools/bananadroid/tool.py
+```
+2. Create tool class as AbstractTool child and implements `execute_tool_specific_logic` function
+```python
+import os
+
+from ..tool_spec import AbstractTool
+
+class ToolSpec(AbstractTool):
+   '''
+   AbstractTool.__init__(self, name, description, process_pattern)
+   Args:
+      name(str): The name of the tool 
+      description(str): The tool's description (such as test case genration, and so on) 
+      process_pattern(str): A string with the pattern of the processes to be killed after execution
+   '''
+   def __init__(self):
+      super(ToolSpec, self).__init__('bananadroid', 'Bananadroid tool description', 'org.bananadroid')
+   
+   '''
+   This is our hook method, an extention point that every tool developer 
+   must provide an implementation. 
+   '''
+   def execute_tool_specific_logic(self, TRACE_DIR, fileName, timeout):
+      # Bananadroid tool specific initialization method
+      pass
+```
+3. All set, you can test if the benchmark is able to recognize your tool with command
+```shell
+   >>> python main.py --list-tools
+   INFO:root: [Listing available tools] 
+
+    [bananadroid] Bananadroid tool description
+
+   [...]
+```
+
 ## Tool Specific Dependencies
 
 ### Droidbot
