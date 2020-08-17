@@ -169,6 +169,15 @@ To run the benchmark with the droidmate tool, the following dependencies must be
 
 More info in the wiki `https://github.com/uds-se/droidmate/wiki/Building#environment`.
 
+### Humanoid
+
+Clone `https://github.com/yzygitzh/Humanoid.git`. To run the benchmark with the Humanoid tool, the following dependencies must be satisfied:
+
+   * Python 3.x
+   * Tensorflow
+   * DroidBot
+   * PyFlann (one may need to make it work under Python 3 according to its README)
+
 ### Sapienz
 
 Clone the Stoat fork at `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied.
