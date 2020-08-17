@@ -90,8 +90,6 @@ Here is a sample on how to use the benchmark arguments:
 ```
 2. Create tool class as AbstractTool child and implements `execute_tool_specific_logic` function
 ```python
-import os
-
 from ..tool_spec import AbstractTool
 
 class ToolSpec(AbstractTool):
