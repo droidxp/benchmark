@@ -107,7 +107,7 @@ class ToolSpec(AbstractTool):
    This is our hook method, an extention point that every tool developer 
    must provide an implementation. 
    '''
-   def execute_tool_specific_logic(self, TRACE_DIR, fileName, timeout):
+   def execute_tool_specific_logic(self, file_name, timeout):
       # Bananadroid tool specific initialization method
       pass
 ```
