@@ -20,6 +20,7 @@ This project depends on:
 
 It's assumed that some commands are in your PATH environment variable: `adb`, `java`, `jarsigner`, `emulator` and `aapt`.
 
+Installation scripts can be found in [droidxp/benchmark-vm](https://github.com/droidxp/benchmark-vm)
 
 ## How to run
 
@@ -38,7 +39,7 @@ The benchmark controll arguments follows:
     -h, --help            show this help message and exit
     --list-tools          list available tools
     -tools TOOLS [TOOLS ...]
-                            List of test tools used in the experiment
+                          List of test tools used in the experiment
     -t T [T ...]          (-t -time) Threshold of the execution time in the experiment (in seconds)
     -r R                  (-r, -repetitions) Number of repetitions used in the experiment
     --list-outputs        List available output formats
