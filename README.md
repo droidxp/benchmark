@@ -167,7 +167,7 @@ To run the benchmark with the droidmate tool, the following dependencies must be
       * `ANDROID_HOME`
       * `gnuplot` in `PATH`
 
-More info in the wiki `https://github.com/uds-se/droidmate/wiki/Building#environment`.
+More info in the wiki [`https://github.com/uds-se/droidmate/wiki/Building#environment`](https://github.com/uds-se/droidmate/wiki/Building#environment).
 
 ### Humanoid
 
