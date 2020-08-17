@@ -16,6 +16,7 @@ This project depends on:
 - Java 7
 - Android SDK 23+
 - Python 2 or 3
+- Pixel 2 android emulator
 
 It's assumed that some commands are in your PATH environment variable: `adb`, `java`, `jarsigner`, `emulator` and `aapt`.
 
@@ -31,7 +32,6 @@ To run the benchmark, execute the following command:
 The benchmark controll arguments follows:
 
     usage: python main.py [-h] [--list-tools] [-tools TOOLS [TOOLS ...]] [-t T] [-r R]
-               [-s SAMPLE] 
 
 Here is a sample on how to use the benchmark arguments:
 
