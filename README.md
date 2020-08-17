@@ -68,39 +68,6 @@ If successfully installed, you should be able to execute `droidbot -h`.
 
 More info at the README.md from the fork `https://github.com/droidxp/droidbot-stable`.
 
-### STOAT
-
-To run the benchmark with the stoat tool, the following dependencies must be satisfied.
-
-   * Ruby 2.1
-   * Nokogiri (try gem install nokogiri)
-   * Python uiautomator library (try pip install uiautomator)
-   * Android SDK 18+
-
-Clone the Stoat fork at `https://github.com/rbonifacio/Stoat.git`. It is also necessary to add the `bin` directory of the Stoat project to the PATH environment variable. Something like.
-
-```sh
-export STOAT_HOME=~/Documents/workspace-droidxp/Stoat/Stoat
-export PATH=$PATH:$STOAT_HOME/bin
-```
-
-### Sapienz
-
-Clone the Stoat fork at `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied.
-
-   * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev`
-      * Or Mac OS: `brew install coreutils for gtimeout`
-   * Install project Sapienz dependencies by running `sudo pip install -r requirements.txt` at Sapienz root folder.
-   * Android SDK 19+
-
- It is also necessary to add the project folder in `SAPIENZ_HOME` environment variable. Something like:
-
-```sh
-export SAPIENZ_HOME=~/workspace-droidxp/sapienz/
-```
-
-> **Note:** The environment variable SAPIENZ_HOME needs to end with a '/' character.
-
 ### Droidmate
 
 To run the benchmark with the droidmate tool, the following dependencies must be satisfied.
@@ -124,3 +91,36 @@ To run the benchmark with the droidmate tool, the following dependencies must be
       * `gnuplot` in `PATH`
 
 More info in the wiki `https://github.com/uds-se/droidmate/wiki/Building#environment`.
+
+### Sapienz
+
+Clone the Stoat fork at `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied.
+
+   * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev`
+      * Or Mac OS: `brew install coreutils for gtimeout`
+   * Install project Sapienz dependencies by running `sudo pip install -r requirements.txt` at Sapienz root folder.
+   * Android SDK 19+
+
+ It is also necessary to add the project folder in `SAPIENZ_HOME` environment variable. Something like:
+
+```sh
+export SAPIENZ_HOME=~/workspace-droidxp/sapienz/
+```
+
+> **Note:** The environment variable SAPIENZ_HOME needs to end with a '/' character.
+
+### STOAT
+
+To run the benchmark with the stoat tool, the following dependencies must be satisfied.
+
+   * Ruby 2.1
+   * Nokogiri (try gem install nokogiri)
+   * Python uiautomator library (try pip install uiautomator)
+   * Android SDK 18+
+
+Clone the Stoat fork at `https://github.com/rbonifacio/Stoat.git`. It is also necessary to add the `bin` directory of the Stoat project to the PATH environment variable. Something like.
+
+```sh
+export STOAT_HOME=~/Documents/workspace-droidxp/Stoat/Stoat
+export PATH=$PATH:$STOAT_HOME/bin
+```
