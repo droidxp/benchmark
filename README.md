@@ -1,5 +1,7 @@
 # Benchmark
 
+Simplifying the comparison of existing tools for mining android sandboxes.
+
 ## Summary
 
 - [Description](#description)
@@ -8,7 +10,33 @@
 
 ## Description
 
-TODO: Description of the project: Purpose, Architecture...
+Due to the popularization of Android and the full range of applications targeting
+this platform, many security issues have emerged, attracting researchers and
+practitioners' attention. As such, many techniques for addressing security
+Android issues have emerged, including approaches for mining sandboxes using
+dynamic analysis tools (i.e., automated testing tools).
+
+Undoubtedly, the resulting sandboxes' efficiency depends on the test case generation
+tools used in the mining procedures; and previous research studies have compared Android
+test case generation tools for this specific goal.
+
+However, it's difficult to increment the research in this field because reproducing
+these previous empirical studies is a challenging and time-consuming task. This
+difficulty occurs because it's necessary to integrate test generation tools that
+often require different and conflicting versions of the Android platform, programming
+languages (e.g., Python 2 and Python 3), and software libraries.
+
+To mitigate this issue, we present our droidxp/benchmark, a software
+infrastructure that allows researchers (and tools developers) to integrate and
+compare test case generation tools for mining sandboxes.
+
+We evaluated droidxp/benchmark through a reproduction study of previous research work,
+though considering additional test case generation tools. Our experiment suggests that
+droidxp/benchmark simplifies the comparison of existing tools for mining sandboxes.
+
+### Architecture
+
+![](./design.png)
 
 ## Dependencies
 
