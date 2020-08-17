@@ -181,7 +181,7 @@ Clone `https://github.com/yzygitzh/Humanoid.git`. To run the benchmark with the 
 
 ### Sapienz
 
-Clone the Stoat fork at `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied.
+Clone `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied
 
    * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev`
       * Or Mac OS: `brew install coreutils for gtimeout`
