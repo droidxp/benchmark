@@ -31,19 +31,25 @@ To run the benchmark, execute the following command:
 
 The benchmark controll arguments follows:
 
-    usage: python main.py [-h] [--list-tools] [-tools TOOLS [TOOLS ...]] [-t T] [-r R]
+    usage: python main.py [-h] [--list-tools] [-tools TOOLS [TOOLS ...]] [-t T [T ...]]
+           [-r R] [--list-outputs] [--output OUTPUT] [--debug] [--version]
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --list-tools          list available tools
+    -tools TOOLS [TOOLS ...]
+                            List of test tools used in the experiment
+    -t T [T ...]          (-t -time) Threshold of the execution time in the experiment (in seconds)
+    -r R                  (-r, -repetitions) Number of repetitions used in the experiment
+    --list-outputs        List available output formats
+    --output OUTPUT       OUTPUT FORMAT that will be used to show results (default: basic)
+    --debug               Run in DEBUG mode (default: false)
+    --version             Print the benchmark version   
 
 Here is a sample on how to use the benchmark arguments:
 
     python main.py -tools monkey droidbot -t 60 -r 3
     
-    where:
-    --list-tools list available tools
-    -tools set tools
-    -t as int in seconds
-    -r as int
-    
-
 ## Tool Specific Dependencies
 
 ### Droidbot
