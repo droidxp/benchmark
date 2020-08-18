@@ -183,7 +183,7 @@ Clone `https://github.com/yzygitzh/Humanoid.git`. To run the benchmark with the 
 
 Clone `https://github.com/droidxp/sapienz.git`. To run the benchmark with the Sapienz tool, the following dependencies must be satisfied
 
-   * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev`
+   * Linux: `sudo apt-get install libfreetype6-dev libxml2-dev libxslt1-dev python-dev python-tk`
       * Or Mac OS: `brew install coreutils for gtimeout`
    * Install project Sapienz dependencies by running `sudo pip install -r requirements.txt` at Sapienz root folder.
    * Android SDK 19+
