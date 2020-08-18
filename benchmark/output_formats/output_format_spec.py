@@ -32,7 +32,7 @@ class AbstractOutputFormat():
         '''
         pass
 
-    def process(self, execution_ts, timeouts, repetitions, tools):
+    def process(self, execution_ts):
         '''This is the operation that allows the execution of an output format.
         It works as a template method, implementing a loging that delegates to
         the abstract method of this class the actual logic.
@@ -42,8 +42,15 @@ class AbstractOutputFormat():
            locate the results file.
         '''
         logging.info('Generating output...')
+        (timeouts, repetitions, tools) = self._recover_execution_params(execution_ts)
         results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools)
         self.execute_output_format_specific_logic(execution_ts, timeouts, repetitions, tools, results)
+
+    def _recover_execution_params(self, execution_ts):
+        timeouts = [int(t) for t in os.listdir(os.path.join(RESULTS_DIR, execution_ts)) if t.isdigit()]
+        repetitions = [int(r) for r in os.listdir(os.path.join(RESULTS_DIR, execution_ts, str(timeouts[0])))]
+        tools = os.listdir(os.path.join(RESULTS_DIR, execution_ts, str(timeouts[0]), str(repetitions[0])))
+        return (timeouts, max(repetitions), tools)
 
     def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools):
         # Initialize results

@@ -84,6 +84,9 @@ if __name__ == '__main__':
     # Print program version
     parser.add_argument('--version', help='Print the benchmark version', dest='version', action='store_true')
 
+    # Generate output for a specific timestamp
+    parser.add_argument('--generate-output', help='Generate output for a specific timestamp', type=str)
+
     args = parser.parse_args()
 
     # End catching arguments
@@ -104,6 +107,11 @@ if __name__ == '__main__':
             print(" [{0}] {1} \n".format(key, output_formats[key].description))
         sys.exit(0)
 
+    if args.generate_output:
+        logging.info('Generate output for the timestamp: {0}'.format(args.generate_output))
+        output_formats[args.output].process(args.generate_output)
+        sys.exit(0)
+
     if args.version:
         print('v{0}'.format(__version__))
         sys.exit(0)
@@ -112,7 +120,7 @@ if __name__ == '__main__':
     logging.info('############# STARTING BENCHMARK #############')
 
     DroidFax.run(tools, args)
-    output_formats[args.output].process(TIMESTAMP, args.t, args.r, args.tools)
+    output_formats[args.output].process(TIMESTAMP)
 
     end = time.time()
     elapsed = end - start
