@@ -252,7 +252,10 @@ class DroidFax:
 
                 with open(os.path.join(result_dir_repetition, tool, file, 'general_report', 'general_report.log'), 'wb') as general_report_log:
                     general_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    general_report_log.write(utils.get_package_name(os.path.join(input_path, file)).encode('ascii'))
+                    package_name = utils.get_package_name(os.path.join(input_path, file))
+                    if package_name is not None:
+                        general_report_log.write(package_name.encode('ascii'))
+
 
                     general_report_cmd = Command('java', [
                         '-Xmx4g',
@@ -294,7 +297,9 @@ class DroidFax:
 
                 with open(os.path.join(result_dir_repetition, tool, file, 'security_report', 'security_report.log'), 'wb') as security_report_log:
                     security_report_log.write('Result for {0}'.format(file).encode('ascii'))
-                    security_report_log.write(utils.get_package_name(os.path.join(input_path, file)).encode('ascii'))
+                    package_name = utils.get_package_name(os.path.join(input_path, file))
+                    if package_name is not None:
+                        security_report_log.write(package_name.encode('ascii'))
 
                     security_report_cmd = Command('java', [
                         '-Xmx5g',
