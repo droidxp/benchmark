@@ -354,6 +354,17 @@ class DroidFax:
         wait_emulator_cmd = Command('adb', ['wait-for-device'])
         wait_emulator_cmd.invoke()
 
+        root_cmd = Command('adb', [
+            'wait-for-device',
+            'root',
+        ])
+        while root_cmd.invoke().stderr.strip().decode('ascii'):
+           time.sleep(5)
+
+        adb_remount = Command('adb', ['wait-for-device', 'remount'])
+        while adb_remount.invoke().stderr.strip().decode('ascii'):
+           time.sleep(5)
+
         logging.info('Emulator booted!')
         end = time.time()
         elapsed = end - start
