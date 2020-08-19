@@ -35,7 +35,7 @@ class ToolSpec(AbstractTool):
         with open(trace_file, 'wb') as trace:
 
             # Exec test generator
-            exec_cmd = Command('python', [
+            exec_cmd = Command('python2', [
                 os.environ['SAPIENZ_HOME'] + os.sep + 'main.py',
                 os.path.join(temp_folder, file_name)
             ], timeout)
