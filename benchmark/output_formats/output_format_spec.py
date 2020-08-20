@@ -163,8 +163,8 @@ class AbstractOutputFormat():
     def _process_app(self, app_name, app):
         """Process the results from the execution of each app."""
         result = {}
-        malware = self._process_malware_detection(app['benign'], app['malign'])
-        benign_coverage, malign_coverage, average_coverage = self._process_coverage(app['benign'], app['malign'])
+        malware = self._process_malware_detection(app[constants.PREFIX_BENIGN], app[constants.PREFIX_MALIGN])
+        benign_coverage, malign_coverage, average_coverage = self._process_coverage(app[constants.PREFIX_BENIGN], app[constants.PREFIX_MALIGN])
         result[constants.COLUMN_NAME] = app_name
         result[constants.COLUMN_MALWARE] = malware
         result[constants.COLUMN_COVERAGE_BENIGN] = benign_coverage
@@ -238,11 +238,22 @@ class AbstractOutputFormat():
         """
         apps = {}
         for executed_apk in os.listdir(tool_result_dir):
-            simple_name = utils.get_package_name(os.path.join(INPUT_DIR, executed_apk))
+            simple_name = self._get_simple_name(executed_apk).strip()
             if not simple_name in apps:
                 apps[simple_name] = {}
             if executed_apk.lower().startswith(constants.PREFIX_BENIGN):
-                apps[simple_name]['benign'] = os.path.join(tool_result_dir, executed_apk)
+                apps[simple_name][constants.PREFIX_BENIGN] = os.path.join(tool_result_dir, executed_apk)
             else:
-                apps[simple_name]['malign'] = os.path.join(tool_result_dir, executed_apk)
+                apps[simple_name][constants.PREFIX_MALIGN] = os.path.join(tool_result_dir, executed_apk)
         return apps
+    
+    
+    def _get_simple_name(self, name):
+        """
+        Recover the simple name of the dir.
+        
+        Returns: the name of the without the prefix and hash.
+        """
+        if name.startswith(constants.PREFIX_BENIGN):
+            return name[len(constants.PREFIX_BENIGN)+1:name.rfind('-')]
+        return name[len(constants.PREFIX_MALIGN)+1:name.rfind('-')]
