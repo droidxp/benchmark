@@ -9,4 +9,6 @@ class ToolSpec(AbstractTool):
         super(ToolSpec, self).__init__("joke", """joke joke""",'')
         
     def execute_tool_specific_logic(self, TRACE_DIR, file_name, timeout):
-        pass
+        from time import sleep
+        sleep(timeout)
+        del sleep
