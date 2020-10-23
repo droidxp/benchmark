@@ -53,6 +53,9 @@ It's assumed that some commands are in your PATH environment variable: `adb`, `j
 Installation scripts can be found in [droidxp/benchmark-vm](https://github.com/droidxp/benchmark-vm)
 
 ## How to run
+To install the project dependencies:
+
+    pip install -r requirements.txt
 
 To run the benchmark, execute the following command:
 
