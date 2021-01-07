@@ -32,7 +32,7 @@ class AbstractOutputFormat():
         '''
         pass
 
-    def process(self, execution_ts):
+    def process(self, execution_ts, disable_static=False):
         '''This is the operation that allows the execution of an output format.
         It works as a template method, implementing a loging that delegates to
         the abstract method of this class the actual logic.
@@ -43,7 +43,7 @@ class AbstractOutputFormat():
         '''
         logging.info('Generating output...')
         (timeouts, repetitions, tools) = self._recover_execution_params(execution_ts)
-        results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools)
+        results = self._read_and_process_results(execution_ts, timeouts, repetitions, tools, disable_static)
         self.execute_output_format_specific_logic(execution_ts, timeouts, repetitions, tools, results)
 
     def _recover_execution_params(self, execution_ts):
@@ -52,7 +52,7 @@ class AbstractOutputFormat():
         tools = os.listdir(os.path.join(RESULTS_DIR, execution_ts, str(timeouts[0]), str(repetitions[0])))
         return (timeouts, max(repetitions), tools)
 
-    def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools):
+    def _read_and_process_results(self, execution_ts, timeouts, repetitions, tools, disable_static=False):
         # Initialize results
         results = {}
         results[constants.COLUMN_TIMEOUTS] = {}
@@ -64,7 +64,7 @@ class AbstractOutputFormat():
             # Iterate repetitions
             for rep_num in range(repetitions):
                 rep = str(rep_num + 1)
-                repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools))
+                repetition_results.append(self._process_repetition(execution_ts, timeout, rep, tools, disable_static))
             results[constants.COLUMN_TIMEOUTS][timeout] = {}
             results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_REPETITIONS] = repetition_results
             results[constants.COLUMN_TIMEOUTS][timeout][constants.COLUMN_AVERAGE] = self._post_process_timeout_results(execution_ts, timeout, tools, repetition_results)
@@ -129,15 +129,15 @@ class AbstractOutputFormat():
                 merge_result[constants.COLUMN_TOOLS][tool][constants.COLUMN_ACCURACY] += result[tool][constants.COLUMN_ACCURACY] / len(repetition_results)
         return merge_result
 
-    def _process_repetition(self, execution_ts, timeout, repetition, tools):
+    def _process_repetition(self, execution_ts, timeout, repetition, tools, disable_static=False):
         """Process the executions of each repetition."""
         rep_results = {}
         # Iterate tools
         for tool in tools:
-            rep_results[tool] = self._process_tool(execution_ts, timeout, repetition, tool)
+            rep_results[tool] = self._process_tool(execution_ts, timeout, repetition, tool, disable_static)
         return rep_results
 
-    def _process_tool(self, execution_ts, timeout, rep, tool):
+    def _process_tool(self, execution_ts, timeout, rep, tool, disable_static=False):
         """Process the executions of each tool."""
         tool_results = {}
         tool_results[constants.COLUMN_APPS] = {}
@@ -148,7 +148,7 @@ class AbstractOutputFormat():
         tool_result_dir = os.path.join(RESULTS_DIR, execution_ts, timeout, rep, tool)
         apps = self._get_app_versions(tool_result_dir)
         for app_name in apps:
-            app_result = self._process_app(app_name, apps[app_name])
+            app_result = self._process_app(app_name, apps[app_name], disable_static)
             coverage_sum += app_result[constants.COLUMN_COVERAGE]
             if app_result[constants.COLUMN_MALWARE]:
                 accurage_sum += 1
@@ -160,10 +160,10 @@ class AbstractOutputFormat():
         tool_results[constants.COLUMN_ACCURACY] = (accurage_sum / len(tool_results[constants.COLUMN_APPS])) * 100
         return tool_results
 
-    def _process_app(self, app_name, app):
+    def _process_app(self, app_name, app, disable_static=False):
         """Process the results from the execution of each app."""
         result = {}
-        malware = self._process_malware_detection(app[constants.PREFIX_BENIGN], app[constants.PREFIX_MALIGN])
+        malware = self._process_malware_detection(app[constants.PREFIX_BENIGN], app[constants.PREFIX_MALIGN], disable_static)
         benign_coverage, malign_coverage, average_coverage = self._process_coverage(app[constants.PREFIX_BENIGN], app[constants.PREFIX_MALIGN])
         result[constants.COLUMN_NAME] = app_name
         result[constants.COLUMN_MALWARE] = malware
@@ -172,7 +172,7 @@ class AbstractOutputFormat():
         result[constants.COLUMN_COVERAGE] = average_coverage
         return result
 
-    def _process_malware_detection(self, benign_path, malign_path):
+    def _process_malware_detection(self, benign_path, malign_path, disable_static=False):
         """Process results from benign and malign versions and verify if the
         test generation could detect a malware.
 
@@ -180,8 +180,8 @@ class AbstractOutputFormat():
             true - Could detect malware
             false - Couldn't detect malware
         """
-        benign = self._read_source_file(benign_path)
-        malign = self._read_source_file(malign_path)
+        benign = self._read_source_file(benign_path, disable_static)
+        malign = self._read_source_file(malign_path, disable_static)
         return not benign.equals(malign)
 
     def _process_coverage(self, benign_path, malign_path):
@@ -204,13 +204,17 @@ class AbstractOutputFormat():
         average_coverage = (benign_coverage + malign_coverage) / 2
         return (benign_coverage, malign_coverage, average_coverage)
 
-    def _read_source_file(self, path):
+    def _read_source_file(self, path, disable_static=False):
         '''Transforms the security result file (src.txt) in a pandas' DataFrame,
         ordering by the name of sensitive API.
         '''
         df = pd.read_csv(os.path.join(path, constants.SECURITY_REPORT_DIR, constants.SECURITY_REPORT_FILE), sep="\t", header=None)
         # Remove not used columns
-        df.drop(df.columns[[1, 2, 3, 4, 5]], axis=1, inplace=True)
+        if disable_static:
+            df.drop(df.columns[[1, 2, 3, 4, 5, 6]], axis=1, inplace=True)
+        else:
+            df.drop(df.columns[[1, 2, 3, 4, 5]], axis=1, inplace=True)
+        
         df.sort_values(by=[0], inplace=True)
         df.reset_index(drop=True, inplace=True)
         return df

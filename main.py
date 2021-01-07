@@ -87,6 +87,9 @@ if __name__ == '__main__':
     # Generate output for a specific timestamp
     parser.add_argument('--generate-output', help='Generate output for a specific timestamp', type=str)
 
+    # Disable static analysis 
+    parser.add_argument('--disable-static', help='Disable static analysis made by DroidFax', dest='disable_static', action='store_true')
+
     args = parser.parse_args()
 
     # End catching arguments
@@ -109,7 +112,7 @@ if __name__ == '__main__':
 
     if args.generate_output:
         logging.info('Generate output for the timestamp: {0}'.format(args.generate_output))
-        output_formats[args.output].process(args.generate_output)
+        output_formats[args.output].process(args.generate_output, args.disable_static)
         sys.exit(0)
 
     if args.version:
@@ -120,7 +123,7 @@ if __name__ == '__main__':
     logging.info('############# STARTING BENCHMARK #############')
 
     DroidFax.run(tools, args)
-    output_formats[args.output].process(TIMESTAMP)
+    output_formats[args.output].process(TIMESTAMP, args.disable_static)
 
     end = time.time()
     elapsed = end - start
