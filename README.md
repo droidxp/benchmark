@@ -5,10 +5,17 @@ Simplifying the comparison of existing tools for mining android sandboxes.
 ## Summary
 
 - [Description](#description)
+- [Architecture](#architecture)
 - [Dependencies](#dependencies)
+  - [Instalation Scripts](#instalation-scripts)
 - [How to run](#how-to-run)
+  - [How to run with arguments](#how-to-run-with-arguments)
 - [How to add your tool](#how-to-add-your-tool)
 - [Tool Specific Dependencies](#tool-specific-dependencies)
+  - [Droidbot](#droidbot)
+  - [Droidmate](#droidmate)
+  - [Humanoid](#humanoid)
+  - [Sapienz](#sapienz)
 
 ## Description
 
@@ -48,9 +55,14 @@ This project depends on:
 - Python 2 or 3
 - Pixel 2 android emulator
 
-It's assumed that some commands are in your PATH environment variable: `adb`, `java`, `jarsigner`, `emulator` and `aapt`.
+It's assumed that some commands are in your PATH environment variable: `adb`, `java`, `jarsigner`,
+`emulator` and `aapt`.
 
-Installation scripts can be found in [droidxp/benchmark-vm](https://github.com/droidxp/benchmark-vm)
+### Instalation Scripts
+
+Installation scripts can be found in [droidxp/benchmark-vm](https://github.com/droidxp/benchmark-vm).
+Each folder contains a `config.sh` script that will install this project's dependencies on the OS
+identified by the respective folder's name.
 
 ## How to run
 To install the project dependencies:
@@ -61,7 +73,7 @@ To run the benchmark, execute the following command:
 
     python main.py
     
-## How to run with arguments
+### How to run with arguments
 
 The benchmark controll arguments follows:
 
