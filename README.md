@@ -95,7 +95,18 @@ The benchmark controll arguments follows:
 Here is a sample on how to use the benchmark arguments:
 
     python main.py -tools monkey droidbot -t 60 -r 3
-    
+
+### How to download the apps
+
+All apps used in this research are listed in [LargeI.csv](data/input/LargeI.csv)
+and [SmallE.csv](data/input/SmallE.csv) files. They can be downloaded using the Python script
+[getApps.py](data/input/getApps.py).
+
+These apps come from the Androzoo repository, so it is necessary to acquire an
+access key and configure it in the Python script:
+
+   key="Insert here your key"
+
 ## How to add your tool
 
 1. Create a new package with your tool name
