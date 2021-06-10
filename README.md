@@ -110,6 +110,11 @@ to acquire an access key and configure it in the Python script:
 key="Insert here your key"
 ```
 
+These apps MUST be stored in the `benchmark/data/input/` folder.
+
+> We recommend using the script to download the apps because it formats the name of the
+> files to organize in malign and benign apps.
+
 ## How to add your tool
 
 1. Create a new package with your tool name
