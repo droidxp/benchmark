@@ -10,6 +10,7 @@ Simplifying the comparison of existing tools for mining android sandboxes.
   - [Instalation Scripts](#instalation-scripts)
 - [How to run](#how-to-run)
   - [How to run with arguments](#how-to-run-with-arguments)
+  - [How to download the apps](#how-to-download-the-apps)
 - [How to add your tool](#how-to-add-your-tool)
 - [Tool Specific Dependencies](#tool-specific-dependencies)
   - [Droidbot](#droidbot)
@@ -102,10 +103,12 @@ All apps used in this research are listed in [LargeI.csv](data/input/LargeI.csv)
 and [SmallE.csv](data/input/SmallE.csv) files. They can be downloaded using the Python script
 [getApps.py](data/input/getApps.py).
 
-These apps come from the Androzoo repository, so it is necessary to acquire an
-access key and configure it in the Python script:
+These apps come from the [Androzoo](https://androzoo.uni.lu/) repository, so it is necessary
+to acquire an access key and configure it in the Python script:
 
-   key="Insert here your key"
+```py
+key="Insert here your key"
+```
 
 ## How to add your tool
 
