@@ -8,7 +8,7 @@ import csv
 
 count = 0
 
-with open('Extra.csv') as csvfile:
+with open('LargeI.csv') as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:
         if row[0] != "Benign":
