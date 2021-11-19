@@ -19,4 +19,4 @@ KEYSTORE_PATH = os.path.join(WORKING_DIR, 'data', 'keystores', 'droidfax.jks')
 KEYSTORE_PASSWORD = '123456'
 KEYALIAS = 'droidfax'
 
-AVD_NAME = 'Nexus-One-10'
+AVD_NAME = 'Pixel_4_API_28'
