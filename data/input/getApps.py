@@ -1,7 +1,7 @@
 #To get download key acess androzoo web site
 #https://androzoo.uni.lu/ and ask for a key
 
-key="Askforyorkeyatandrozooandinserthere"
+key="Askforakeyatandrozooandinserhere"
 
 
 
