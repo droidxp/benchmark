@@ -331,7 +331,7 @@ class DroidFax:
                     ])
                     security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
 
-                for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
+                for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'sensitiveMtd.csv', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
                         os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(result_dir_repetition, tool, file, 'security_report', result_file))
 
