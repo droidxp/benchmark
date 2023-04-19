@@ -101,7 +101,7 @@ class DroidFax:
                 os.path.join(INSTRUMENTED_DIR),
                 '-instr3rdparty',
                 '-monitorApiCalls',
-		        '-catsink',
+                '-catsink',
                 os.path.join(WORKING_DIR, 'data', 'catsinks.txt.final'),
                 '-process-dir',
                 os.path.join(input_path, file)
