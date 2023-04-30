@@ -6,7 +6,7 @@ import csv
 
 from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
 from .commands.command import Command
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import signal
 import re
 import shutil
@@ -34,19 +34,20 @@ class DroidFax:
         timeout = args[0].t
         tools = args[0].tools
         output_format = args[0].output.lower()
+        catch_arguments = args[0].p
         # End Arg parse
 
-        cls.phase_one_instrumentation(INPUT_DIR)
+        cls.phase_one_instrumentation(INPUT_DIR, catch_arguments)
         for time in timeout:
             for repetition in range(repetitions):
-               cls.phase_two_execution(time, tool_set, tools, repetition+1)
-               cls.phase_three_results(time, tools, INPUT_DIR, repetition+1)
+               cls.phase_two_execution(time, tool_set, tools, repetition+1, catch_arguments)
+               cls.phase_three_results(time, tools, INPUT_DIR, repetition+1, catch_arguments)
 
         # Writting general research log about each benchmark execution (with timestamp, timeduration, tools and samples used, as well as for repetitions quantity)
         cls._log_excecution_meta(tools, timeout, TIMESTAMP, repetitions)
 
     @staticmethod
-    def phase_one_instrumentation(input_path):
+    def phase_one_instrumentation(input_path, catch_arguments=False):
         logging.info('Droidfax\'s Phase 1: Instrumentation')
         
         # Create a folder to store intrumented apps if it doesn't exist.
@@ -82,7 +83,7 @@ class DroidFax:
 
             # Instrument app
             logging.info('Instrumenting {0}'.format(file))
-            instrument_cmd = Command('java', [
+            instrument_cmd_args = [
                 '-Xmx14g', 
                 '-ea', 
                 '-cp',
@@ -100,12 +101,19 @@ class DroidFax:
                 '-d',
                 os.path.join(INSTRUMENTED_DIR),
                 '-instr3rdparty',
-                '-monitorApiCalls',
-                '-catsink',
-                os.path.join(WORKING_DIR, 'data', 'catsinks.txt.final'),
                 '-process-dir',
                 os.path.join(input_path, file)
-            ], 1200)
+            ]
+
+
+            if catch_arguments:
+                logging.info('Selected instrumentation will add argument catching')
+                instrument_cmd_args.extend([
+                    '-monitorApiCalls',
+                    '-catsink',
+                    os.path.join(WORKING_DIR, 'data', 'catsinks.txt.final'),
+                ])
+            instrument_cmd = Command('java', instrument_cmd_args, 1200)
             instrument_result = instrument_cmd.invoke()
 
             end = time.time()
@@ -138,7 +146,7 @@ class DroidFax:
             verify_result = verify_cmd.invoke()
 
     @classmethod
-    def phase_two_execution(cls, timeout, tool_set, tools, repetition):
+    def phase_two_execution(cls, timeout, tool_set, tools, repetition, catch_arguments=False):
         logging.info('Droidfax\'s Phase 2: Execution - Repetition {0}'.format(repetition).encode('ascii'))
 
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
@@ -175,14 +183,19 @@ class DroidFax:
                 
                     logging.info('Installing {0}'.format(file))
                     cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
+                    cls._simulate_reboot()
                     logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'hcai-intent-monitor', 'hcai-cg-monitor'])
-                    apicall_logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'apicall-monitor'])
                     logcat_file = os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
-                    apicall_logcat_file = os.path.join(trace_dir_repetition, tool, "{0}-arguments.logcat".format(file))
 
-                    with open(logcat_file, 'wb') as log_cat, open(apicall_logcat_file, 'wb') as apicall_log_cat:
+                    if catch_arguments:
+                        apicall_logcat_cmd = Command('adb', ['logcat', '-v', 'raw', '-s', 'apicall-monitor'])
+                        apicall_logcat_file = os.path.join(trace_dir_repetition, tool, "{0}-arguments.logcat".format(file))
+
+                    with open(logcat_file, 'wb') as log_cat, \
+                        open(apicall_logcat_file, 'wb') if catch_arguments else nullcontext() as apicall_log_cat:
                         proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
-                        apicall_proc = apicall_logcat_cmd.invoke_as_deamon(stdout=apicall_log_cat)
+                        if catch_arguments:
+                            apicall_proc = apicall_logcat_cmd.invoke_as_deamon(stdout=apicall_log_cat)
 
                         logging.info('Executing {0}'.format(file))
                         start = time.time()
@@ -192,7 +205,8 @@ class DroidFax:
                         
                         end = time.time()
                         logging.debug("Execution took {0} seconds".format(int(end-start)))
-                        apicall_proc.kill()
+                        if catch_arguments:
+                            apicall_proc.kill()
                         proc.kill()
 
                     logging.info('Done testing {0}'.format(file))
@@ -202,7 +216,7 @@ class DroidFax:
         # cls._kill_emulator()
 
     @classmethod
-    def phase_three_results(cls, time, tools, input_path, repetition):
+    def phase_three_results(cls, time, tools, input_path, repetition, catch_arguments=False):
         logging.info('Droidfax\'s Phase 3: Results - Repetition {0}'.format(repetition).encode('ascii'))
         # TODO: var time in the same file as `import time`
         # Merge the undestanding of TRACE_DIR with the repetition driven excecution 
@@ -343,60 +357,33 @@ class DroidFax:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
                         os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(result_dir_repetition, tool, file, 'security_report', result_file))
 
-                with open(os.path.join(trace_dir_repetition, tool, "{0}-arguments.logcat".format(file)), 'r', encoding='UTF8') as arguments_trace, \
-                    open(os.path.join(result_dir_repetition, tool, file, 'security_report', 'sensitiveMtdArgs.csv'), 'w', encoding='UTF8') as arguments_result:
-                    arguments_result_writer = csv.writer(arguments_result, delimiter=',', quotechar='"', quoting=csv.QUOTE_NONNUMERIC)
 
-                    for line in arguments_trace:
-                        if line.startswith("--------- beginning of"):
-                            continue
+                if catch_arguments:
+                    with open(os.path.join(trace_dir_repetition, tool, "{0}-arguments.logcat".format(file)), 'r', encoding='UTF8') as arguments_trace, \
+                        open(os.path.join(result_dir_repetition, tool, file, 'security_report', 'sensitiveMtdArgs.csv'), 'w', encoding='UTF8') as arguments_result:
+                        arguments_result_writer = csv.writer(arguments_result, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
 
-                        line = line.replace("[API-TRACK]: ", "", 1)
-                        sep = line.find(" => ")
-                        signature = line[0:sep]
-                        args = line[sep+4:]
+                        for line in arguments_trace:
+                            if line.startswith("--------- beginning of"):
+                                continue
 
-                        args_as_list = [x for x in list(csv.reader([args], skipinitialspace=True, delimiter=',', quotechar='"', escapechar='\\'))[0]]
+                            line = line.replace("[API-TRACK]: ", "", 1)
+                            sep = line.find(" => ")
+                            signature = line[0:sep]
+                            args = line[sep+4:]
 
-                        arguments_result_writer.writerow([signature] + args_as_list)
+                            args_as_list = [x for x in list(csv.reader([args], skipinitialspace=True, delimiter=',', quotechar='"', escapechar='\\'))[0]]
+
+                            arguments_result_writer.writerow([signature] + args_as_list)
 
     @classmethod
     def _start_emulator(cls):
         logging.info('Starting emulator')
-        start = time.time()
                 
         start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-window', '-netdelay', 'none'])
         #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-noaudio', '-no-snapshot-save', '-delay-adb'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
-
-        logging.info('Waiting for emulator to boot')
-        check_emulator_cmd = Command('adb', ['-s', 'emulator-5554', 'shell', 'getprop', 'init.svc.bootanim'])
-        check_result = check_emulator_cmd.invoke()
-        while check_result.stdout.strip().decode('ascii') != 'stopped':
-            time.sleep(5)
-            logging.info('Waiting for emulator to boot')
-            check_result = check_emulator_cmd.invoke()
-        wait_emulator_cmd = Command('adb', ['wait-for-device', 'shell', "'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'"])
-        wait_emulator_cmd.invoke()
-
-        root_cmd = Command('adb', [
-            'wait-for-device',
-            'root',
-        ])
-        while root_cmd.invoke().stderr.strip().decode('ascii'):
-           time.sleep(5)
-
-        adb_remount = Command('adb', ['wait-for-device', 'remount'])
-        while adb_remount.invoke().stderr.strip().decode('ascii'):
-           time.sleep(5)
-
-        logging.info('Emulator booted!')
-        end = time.time()
-        elapsed = end - start
-        if elapsed > 60:
-            logging.info('Emulator took {0} minutes and {1} seconds to boot'.format(int(elapsed / 60), elapsed % 60))
-        else:
-            logging.info('Emulator took {0} seconds to boot'.format(elapsed))
+        cls._wait_for_boot()
     
     @staticmethod
     def _kill_emulator():
@@ -425,6 +412,46 @@ class DroidFax:
             readlink_result.stdout.strip().decode('ascii')
         ])
         install_cmd.invoke()
+
+    @classmethod
+    def _simulate_reboot(cls):
+        logging.info('Starting reboot simulation')
+        sim_reboot_cmd = Command('adb', ['shell', 'am', 'broadcast', '-a', 'android.intent.action.BOOT_COMPLETED'], 15)
+        sim_reboot_cmd.invoke()
+        time.sleep(1)
+        cls._wait_for_boot()
+
+    @staticmethod
+    def _wait_for_boot():
+        start = time.time()
+        logging.info('Waiting for emulator to boot')
+        check_emulator_cmd = Command('adb', ['-s', 'emulator-5554', 'shell', 'getprop', 'init.svc.bootanim'])
+        check_result = check_emulator_cmd.invoke()
+        while check_result.stdout.strip().decode('ascii') != 'stopped':
+            time.sleep(5)
+            logging.info('Waiting for emulator to boot')
+            check_result = check_emulator_cmd.invoke()
+        wait_emulator_cmd = Command('adb', ['wait-for-device', 'shell', "'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'"])
+        wait_emulator_cmd.invoke()
+
+        root_cmd = Command('adb', [
+            'wait-for-device',
+            'root',
+        ])
+        while root_cmd.invoke().stderr.strip().decode('ascii'):
+           time.sleep(5)
+
+        adb_remount = Command('adb', ['wait-for-device', 'remount'])
+        while adb_remount.invoke().stderr.strip().decode('ascii'):
+           time.sleep(5)
+
+        logging.info('Emulator booted!')
+        end = time.time()
+        elapsed = end - start
+        if elapsed > 60:
+            logging.info('Emulator took {0} minutes and {1} seconds to boot'.format(int(elapsed / 60), elapsed % 60))
+        else:
+            logging.info('Emulator took {0} seconds to boot'.format(elapsed))
 
     @classmethod
     def _uninstall_apk(cls, file):

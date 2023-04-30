@@ -90,6 +90,9 @@ if __name__ == '__main__':
     # Disable static analysis 
     parser.add_argument('--disable-static', help='Disable static analysis made by DroidFax', dest='disable_static', action='store_true')
 
+    # Option to enable argument catching
+    parser.add_argument('-p', help='Enable argument catching', action='store_true')
+
     args = parser.parse_args()
 
     # End catching arguments
