@@ -3919,6 +3919,7 @@ SYNCHRONIZATION_DATA:
 NETWORK:
 <java.net.URL: java.net.URLConnection openConnection()> android.permission.INTERNET (NETWORK)
 <java.net.URL: java.net.URLConnection openConnection(java.net.Proxy)> (NETWORK)
+<java.net.URL: void <init>(java.lang.String)> (NETWORK)
 
 FILE:
 <android.os.Debug: void startMethodTracing(java.lang.String,java.io.FileDescriptor,int,int)> (FILE)
