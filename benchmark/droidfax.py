@@ -3,22 +3,27 @@ import os
 import time
 import sys
 import csv
+import subprocess
+import json
 
-from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR
+from settings import TIMESTAMP, START, INPUT_DIR, INSTRUMENTED_DIR, LIBS_DIR, ANDROID_JAR_PATH, KEYSTORE_PASSWORD, KEYSTORE_PATH, KEYALIAS, AVD_NAME, TRACE_DIR, RESULTS_DIR, WORKING_DIR, json_obj_list , json_obj_list_noInstall, json_obj_list_error
 from .commands.command import Command
 from contextlib import contextmanager, nullcontext
+from datetime import datetime
 import signal
 import re
 import shutil
 import utils
 
-class DroidFax:
 
+class DroidFax:
+	
     @classmethod
     @contextmanager
-    def create_emulator(cls):
+
+    def create_emulator(cls,file,repetition):
         # Code to acquire resource, e.g.:
-        emulator = cls._start_emulator()
+        emulator = cls._start_emulator(file,repetition)
         try:
             yield emulator
         finally:
@@ -49,6 +54,7 @@ class DroidFax:
     @staticmethod
     def phase_one_instrumentation(input_path, catch_arguments=False):
         logging.info('Droidfax\'s Phase 1: Instrumentation')
+        #json_obj_list = []
         
         # Create a folder to store intrumented apps if it doesn't exist.
         try:
@@ -115,7 +121,20 @@ class DroidFax:
                 ])
             instrument_cmd = Command('java', instrument_cmd_args, 1200)
             instrument_result = instrument_cmd.invoke()
-
+            logging.info('================ INFO ==============')
+            
+            err = instrument_result.stderr
+            err = err.decode("utf-8")
+            if err != "":
+            	error = utils.Error(format(file), err, 'instrumentation')
+	     	# Encode the custom object using the custom encoder
+            	json_str = json.dumps(error, cls=utils.ErrorEncoder)
+            	json_obj_list_error.append(json_str)
+            	data = json.dumps(json_obj_list_error)
+            	with open('errorBenchmark.json','w') as f:
+            		json.dump(data,f)
+            
+            
             end = time.time()
             logging.info('Static analisys finished. Elapsed time: {0}'.format(end - start))
 
@@ -144,7 +163,9 @@ class DroidFax:
                 os.path.join(INSTRUMENTED_DIR, file)
             ])
             verify_result = verify_cmd.invoke()
-
+	    
+       
+	
     @classmethod
     def phase_two_execution(cls, timeout, tool_set, tools, repetition, catch_arguments=False):
         logging.info('Droidfax\'s Phase 2: Execution - Repetition {0}'.format(repetition).encode('ascii'))
@@ -179,7 +200,7 @@ class DroidFax:
         for tool in tools:
             for file in instrumented_apks:
                 #cls._start_emulator()
-                with cls.create_emulator() as emulator:
+                with cls.create_emulator(file,repetition) as emulator:
                 
                     logging.info('Installing {0}'.format(file))
                     cls._install_apk(os.path.join(INSTRUMENTED_DIR, file))
@@ -194,6 +215,7 @@ class DroidFax:
                     with open(logcat_file, 'wb') as log_cat, \
                         open(apicall_logcat_file, 'wb') if catch_arguments else nullcontext() as apicall_log_cat:
                         proc = logcat_cmd.invoke_as_deamon(stdout=log_cat)
+                                               
                         if catch_arguments:
                             apicall_proc = apicall_logcat_cmd.invoke_as_deamon(stdout=apicall_log_cat)
 
@@ -201,8 +223,20 @@ class DroidFax:
                         start = time.time()
 
                         logging.info("Testing with {0} {1} seconds".format(tool, int(timeout)))
-                        tool_set[tool].execute(trace_dir_repetition, file, timeout)
+                        err_exe = tool_set[tool].execute(trace_dir_repetition, file, timeout)
                         
+                        logging.info(err_exe)
+                        
+                        
+                        if err_exe is not None:
+                            error = utils.Error(format(file_name), err_exe, 'execution')
+                            # Encode the custom object using the custom encoder
+                            json_str = json.dumps(error, cls=utils.ErrorEncoder)
+                            json_obj_list_error.append(json_str)
+                            data = json.dumps(json_obj_list_error)
+                            with open('errorBenchmark.json','w') as f:
+                                json.dump(data,f)
+                     
                         end = time.time()
                         logging.debug("Execution took {0} seconds".format(int(end-start)))
                         if catch_arguments:
@@ -351,8 +385,20 @@ class DroidFax:
                         '-trace',
                         os.path.join(trace_dir_repetition, tool, "{0}.logcat".format(file))
                     ])
-                    security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
-
+                    executed = security_report_cmd.invoke(stdout=security_report_log, stderr=security_report_log)
+              
+                    err = executed.stderr
+                    logging.info(executed.stderr)
+                    if executed.stderr != "":
+                    
+                        error = utils.Error(format(file), executed.stderr, 'report')
+                        # Encode the custom object using the custom encoder
+                        json_str = json.dumps(error, cls=utils.ErrorEncoder)
+                        json_obj_list_error.append(json_str)
+                        data = json.dumps(json_obj_list_error)
+                        with open('errorBenchmark.json','w') as f:
+                            json.dump(data,f)
+                            
                 for result_file in ['srcsink.txt', 'src.txt', 'sink.txt', 'sensitiveMtd.csv', 'callback.txt', 'lifecycleMethod.txt', 'eventHandler.txt', 'securityfeatures.txt']:
                     if os.path.exists(os.path.join(WORKING_DIR, result_file)):
                         os.rename(os.path.join(WORKING_DIR, result_file), os.path.join(result_dir_repetition, tool, file, 'security_report', result_file))
@@ -377,12 +423,22 @@ class DroidFax:
                             arguments_result_writer.writerow([signature] + args_as_list)
 
     @classmethod
-    def _start_emulator(cls):
+    def _start_emulator(cls,file,repetition):
         logging.info('Starting emulator')
-                
+        stringFile = file
+        rep = str(repetition)
+        
         start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-window', '-netdelay', 'none'])
+        #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-netdelay', 'none'])
+        
+        #we must enable this next line to get net information
+        #subprocess.Popen(['emulator', '-tcpdump', RESULTS_DIR+'/tcpDump2/'+stringFile[0:-4]+'-repetition-'+rep+'.pcap', '-avd', AVD_NAME, '-read-only','-wipe-data', '-no-window', '-netdelay', 'none'])
+        #start_emulator_cmd = Command('emulator', ['-tcpdump', RESULTS_DIR+'/tcpDump2/'+stringFile[0:-4]+'-repetition-'+rep+'.pcap', '-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-window', '-netdelay', 'none'])
+        #start_emulator_cmd = Command('emulator', [TCP_DUMP, '-avd', AVD_NAME])
         #start_emulator_cmd = Command('emulator', ['-avd', AVD_NAME, '-writable-system', '-wipe-data', '-no-boot-anim', '-noaudio', '-no-snapshot-save', '-delay-adb'])
         emulator_proc = start_emulator_cmd.invoke_as_deamon()
+           
+                
         cls._wait_for_boot()
     
     @staticmethod
@@ -411,7 +467,26 @@ class DroidFax:
             '-r',
             readlink_result.stdout.strip().decode('ascii')
         ])
-        install_cmd.invoke()
+        install = install_cmd.invoke()
+
+        
+        err = install.stderr
+        err = err.decode("utf-8")
+
+        if err != "":
+        	error = utils.Error(format(file), err, 'install')
+	        # Encode the custom object using the custom encoder
+        	json_str = json.dumps(error, cls=utils.ErrorEncoder)
+        	json_obj_list_error.append(json_str)
+        	data = json.dumps(json_obj_list_error)
+        	with open('errorBenchmark.json','w') as f:
+            		json.dump(data,f)
+        			
+        	#with open('AppNoInstalled'+datetime.now().strftime('%Y_%m_%d') + '.json','w') as f:
+        	#	json.dump(data,f)
+        
+
+                
 
     @classmethod
     def _simulate_reboot(cls):
